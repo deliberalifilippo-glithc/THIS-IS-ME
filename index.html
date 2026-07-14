@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>THIS IS ME? — A Postdigital Recognition Ritual</title>
+<style>
+:root{
+  --bg:#050505;
+  --fg:#f3f3ef;
+  --muted:#9a9a92;
+  --line:rgba(255,255,255,.14);
+  --panel:rgba(8,8,8,.78);
+  --soft:rgba(255,255,255,.055);
+}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;background:var(--bg);color:var(--fg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{overflow:hidden}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+#app{position:fixed;inset:0;background:
+  radial-gradient(circle at 50% 35%,rgba(255,255,255,.035),transparent 32%),
+  linear-gradient(180deg,#050505,#090909 60%,#050505)}
+.top{
+  position:absolute;z-index:30;left:20px;right:20px;top:18px;display:flex;justify-content:space-between;
+  align-items:flex-start;gap:20px;pointer-events:none
+}
+.brand h1{margin:0;font-size:clamp(20px,3.4vw,40px);font-weight:520;letter-spacing:-.045em}
+.brand p{margin:.4rem 0 0;color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.state{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-top:7px}
+.screen{position:absolute;inset:0;display:grid;place-items:center;padding:90px 18px 28px}
+.panel{
+  width:min(980px,100%);max-height:calc(100vh - 130px);overflow:auto;background:var(--panel);
+  border:1px solid var(--line);backdrop-filter:blur(20px);border-radius:24px;padding:clamp(20px,4vw,46px);
+  box-shadow:0 36px 110px rgba(0,0,0,.5)
+}
+.hero{text-align:center;max-width:760px;margin:0 auto}
+.hero h2{margin:0;font-size:clamp(32px,6vw,78px);line-height:.98;letter-spacing:-.055em;font-weight:490}
+.hero p{max-width:620px;margin:1.2rem auto 1.6rem;color:#b8b8b0;line-height:1.65}
+.search{display:flex;gap:10px;max-width:660px;margin:0 auto}
+.search input{flex:1;min-width:0;border-radius:999px;border:1px solid var(--line);background:var(--soft);
+  color:var(--fg);padding:14px 18px;outline:none}
+.search input:focus{border-color:rgba(255,255,255,.38)}
+.btn{border:1px solid var(--line);border-radius:999px;padding:12px 17px;color:var(--fg);background:transparent}
+.btn.primary{background:var(--fg);color:#080808;border-color:transparent}
+.btn.soft{background:var(--soft)}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:13px}
+#searchStatus{min-height:18px;margin-top:10px;font-size:12px;color:#c8c8c2}
+
+.result-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center}
+.image-shell{position:relative;background:#0b0b0b;border:1px solid var(--line);border-radius:20px;overflow:hidden;min-height:380px}
+.image-shell img{width:100%;height:100%;min-height:380px;object-fit:contain;display:block;background:#000}
+.scan{position:absolute;inset:0;pointer-events:none;background:
+  linear-gradient(180deg,transparent 0%,rgba(255,255,255,.06) 50%,transparent 100%);
+  transform:translateY(-100%);animation:scan 2.5s linear infinite}
+@keyframes scan{to{transform:translateY(100%)}}
+.meta .eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.meta h2{font-size:clamp(28px,4vw,54px);letter-spacing:-.045em;line-height:1.02;font-weight:500;margin:.7rem 0}
+.meta p{color:#bdbdb6;line-height:1.6}
+.filemeta{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--muted);line-height:1.8;margin:18px 0}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions .yes{min-width:150px}
+.fail{text-align:center;max-width:700px;margin:0 auto}
+.fail h2{font-size:clamp(34px,6vw,76px);line-height:1;letter-spacing:-.055em;font-weight:500;margin:0}
+.fail p{color:#b8b8b0;line-height:1.6}
+.webcam-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center}
+.video-shell{aspect-ratio:4/3;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:#000}
+video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.webcam-copy h2{font-size:clamp(30px,5vw,62px);line-height:1;letter-spacing:-.05em;font-weight:500;margin:0}
+.webcam-copy p{color:#b8b8b0;line-height:1.65}
+
+#analysis{background:#000}
+.analysis-box{text-align:center;max-width:680px}
+.analysis-box h2{font-size:clamp(26px,5vw,60px);letter-spacing:-.045em;font-weight:500;margin:0 0 20px}
+.analysis-track{height:2px;background:rgba(255,255,255,.12);overflow:hidden}
+.analysis-track span{display:block;height:100%;width:0;background:var(--fg);transition:width .25s linear}
+.analysis-copy{display:flex;justify-content:space-between;font:11px ui-monospace,monospace;color:var(--muted);margin-top:9px}
+
+#art{position:absolute;inset:0;touch-action:none;user-select:none}
+#network,#portrait,#mask{position:absolute;inset:0;width:100%;height:100%;display:block}
+#network{z-index:1} #portrait{z-index:2} #mask{z-index:3}
+.art-overlay{position:absolute;z-index:5;inset:0;pointer-events:none}
+.art-message{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;
+  font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72);
+  opacity:1;transition:opacity 1s ease}
+.art-message.hide{opacity:0}
+.art-bottom{position:absolute;left:20px;right:20px;bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.progress{width:min(320px,48vw)}
+.prow{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pbar{height:2px;background:rgba(255,255,255,.1);margin-top:8px}
+.pbar span{display:block;height:100%;width:0;background:var(--fg)}
+.instruction{max-width:420px;text-align:right;color:var(--muted);font-size:11px;line-height:1.5}
+#ending{position:absolute;z-index:6;inset:0;display:grid;place-items:center;text-align:center;padding:24px;
+  background:rgba(5,5,5,.22);opacity:0;pointer-events:none;transition:opacity 1.4s ease}
+#ending.show{opacity:1}
+#ending .inner{max-width:780px}
+#ending .kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+#ending h2{font-size:clamp(38px,7vw,94px);line-height:.96;letter-spacing:-.06em;font-weight:500;margin:.9rem 0}
+#ending p{color:#bdbdb7;line-height:1.65;margin:0 auto;max-width:620px}
+#ending .small{margin-top:18px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#85857f}
+#ending button{pointer-events:auto;margin-top:22px}
+
+@media(max-width:760px){
+  .result-layout,.webcam-grid{grid-template-columns:1fr}
+  .image-shell,.image-shell img{min-height:300px}
+  .search{flex-direction:column}
+  .screen{padding-top:86px}
+  .panel{padding:20px}
+  .instruction{max-width:44vw}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top">
+    <div class="brand">
+      <h1>THIS IS ME?</h1>
+      <p>A Postdigital Recognition Ritual</p>
+    </div>
+    <div class="state" id="stateLabel">search</div>
+  </div>
+
+  <section class="screen" id="searchScreen">
+    <div class="panel">
+      <div class="hero">
+        <h2>Search yourself.</h2>
+        <p>Internet proverà a riconoscerti attraverso le sue immagini. Tu potrai accettare o rifiutare quella rappresentazione.</p>
+        <form class="search" id="searchForm">
+          <input id="query" placeholder="Nome e cognome" autocomplete="name">
+          <button class="btn primary">Cerca</button>
+        </form>
+        <div id="searchStatus"></div>
+        <div class="note">La ricerca usa Wikimedia Commons. La webcam viene elaborata localmente e nessuna foto viene salvata dal prototipo.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen hidden" id="resultScreen">
+    <div class="panel">
+      <div class="result-layout">
+        <div class="image-shell">
+          <img id="resultImage" alt="">
+          <div class="scan"></div>
+        </div>
+        <div class="meta">
+          <div class="eyebrow" id="rankLabel">Result 1 of 3</div>
+          <h2>Is this you?</h2>
+          <p>Il sistema mostra un solo risultato, scegliendo prima il file originale più grande disponibile.</p>
+          <div class="filemeta" id="fileMeta"></div>
+          <div class="actions">
+            <button class="btn primary yes" id="yesBtn">Questo sono io</button>
+            <button class="btn soft" id="noBtn">Non sono io →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen hidden" id="failScreen">
+    <div class="panel">
+      <div class="fail">
+        <h2>The Internet<br>doesn’t know who you are.</h2>
+        <p>Dopo tre tentativi, il sistema non è riuscito a restituire un’immagine in cui ti riconosci.</p>
+        <button class="btn primary" id="createPortraitBtn">Crea un nuovo ritratto</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen hidden" id="webcamScreen">
+    <div class="panel">
+      <div class="webcam-grid">
+        <div class="video-shell"><video id="video" autoplay playsinline muted></video></div>
+        <div class="webcam-copy">
+          <h2>Create a new portrait.</h2>
+          <p>La fotocamera serve soltanto a creare l’immagine sul tuo dispositivo. Nessuna fotografia viene caricata dal prototipo.</p>
+          <div class="actions">
+            <button class="btn primary" id="captureBtn">Scatta</button>
+            <button class="btn soft" id="backBtn">Torna indietro</button>
+          </div>
+          <div class="note" id="cameraStatus"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen hidden" id="analysis">
+    <div class="analysis-box">
+      <h2>Analysing identity…</h2>
+      <div class="analysis-track"><span id="analysisBar"></span></div>
+      <div class="analysis-copy"><span id="analysisStep">face</span><span id="analysisPercent">0%</span></div>
+    </div>
+  </section>
+
+  <section id="art" class="hidden">
+    <canvas id="network"></canvas>
+    <canvas id="portrait"></canvas>
+    <canvas id="mask"></canvas>
+    <div class="art-overlay">
+      <div class="art-message" id="artMessage">Recognition completed.</div>
+      <div class="art-bottom">
+        <div class="progress">
+          <div class="prow"><span>portrait removed</span><span id="removePct">0%</span></div>
+          <div class="pbar"><span id="removeBar"></span></div>
+        </div>
+        <div class="instruction">Muovi il dito o il mouse. Il volto scompare. Sotto emerge il modo in cui i media partecipano al pensiero.</div>
+      </div>
+    </div>
+    <div id="ending">
+      <div class="inner">
+        <div class="kicker">postdigital positionality</div>
+        <h2>THIS IS ALSO ME.</h2>
+        <p>Il volto è parte dell’identità, ma non la esaurisce. Sotto l’immagine emergono attenzione, ricerca, verifica, memoria, studio, creazione e pausa.</p>
+        <div class="small">No image was deleted. Only assumptions.</div>
+        <button class="btn soft" id="restartBtn">Ricomincia</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const screens = ['searchScreen','resultScreen','failScreen','webcamScreen','analysis'].map(id=>$('#'+id));
+const art=$('#art'), stateLabel=$('#stateLabel');
+const searchForm=$('#searchForm'), queryInput=$('#query'), searchStatus=$('#searchStatus');
+const resultImage=$('#resultImage'), rankLabel=$('#rankLabel'), fileMeta=$('#fileMeta');
+const yesBtn=$('#yesBtn'), noBtn=$('#noBtn');
+const createPortraitBtn=$('#createPortraitBtn'), video=$('#video'), captureBtn=$('#captureBtn'), backBtn=$('#backBtn'), cameraStatus=$('#cameraStatus');
+const analysisBar=$('#analysisBar'), analysisPercent=$('#analysisPercent'), analysisStep=$('#analysisStep');
+const networkCanvas=$('#network'), portraitCanvas=$('#portrait'), maskCanvas=$('#mask');
+const nctx=networkCanvas.getContext('2d'), pctx=portraitCanvas.getContext('2d'), mctx=maskCanvas.getContext('2d');
+const artMessage=$('#artMessage'), removePct=$('#removePct'), removeBar=$('#removeBar'), ending=$('#ending'), restartBtn=$('#restartBtn');
+
+let results=[], current=0, attempts=0, selectedSource=null, stream=null;
+let W=0,H=0,dpr=1,erasing=false,last=null,progress=0,started=false;
+
+const nodes=[
+  {label:'ATTENTION',sub:'regolare il ritmo mentale'},
+  {label:'SEARCH',sub:'aprire percorsi di conoscenza'},
+  {label:'VERIFICATION',sub:'confrontare prima di credere'},
+  {label:'LEARNING',sub:'muoversi tra fonti diverse'},
+  {label:'MEMORY',sub:'depositare tracce esterne'},
+  {label:'CREATION',sub:'trasformare ricerca in forma'},
+  {label:'PAUSE',sub:'decomprimere e ripartire'},
+  {label:'CURIOSITY',sub:'seguire deviazioni utili'}
+];
+
+function showScreen(el){
+  screens.forEach(s=>s.classList.add('hidden'));
+  art.classList.add('hidden');
+  if(el) el.classList.remove('hidden');
+}
+function setState(s){stateLabel.textContent=s}
+function formatBytes(bytes){
+  if(!bytes) return 'dimensione non disponibile';
+  const u=['B','KB','MB','GB']; let i=0,n=bytes;
+  while(n>=1024&&i<u.length-1){n/=1024;i++}
+  return `${n.toFixed(i?1:0)} ${u[i]}`;
+}
+
+searchForm.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const q=queryInput.value.trim();
+  if(!q){searchStatus.textContent='Scrivi un nome da cercare.';return}
+  searchStatus.textContent='Interrogazione dell’archivio…';
+  setState('searching');
+  try{
+    results=await searchCommons(q);
+    if(!results.length){searchStatus.textContent='Nessun risultato trovato.';setState('search');return}
+    current=0;attempts=0;renderCurrent();showScreen($('#resultScreen'));setState('recognition');
+  }catch(err){
+    searchStatus.textContent='La ricerca non è disponibile in questo momento.';
+    setState('search');
+  }
+});
+
+async function searchCommons(query){
+  const endpoint='https://commons.wikimedia.org/w/api.php';
+  const params=new URLSearchParams({
+    action:'query',
+    generator:'search',
+    gsrsearch:query,
+    gsrnamespace:'6',
+    gsrlimit:'18',
+    prop:'imageinfo',
+    iiprop:'url|size|mime',
+    iiurlwidth:'1200',
+    format:'json',
+    origin:'*'
+  });
+  const r=await fetch(`${endpoint}?${params}`);
+  if(!r.ok) throw new Error('network');
+  const data=await r.json();
+  return Object.values(data.query?.pages||{})
+    .map(p=>{
+      const ii=p.imageinfo?.[0];
+      return {
+        title:(p.title||'').replace(/^File:/,''),
+        display:ii?.thumburl||ii?.url,
+        original:ii?.url,
+        width:ii?.width||0,
+        height:ii?.height||0,
+        bytes:ii?.size||0,
+        mime:ii?.mime||''
+      }
+    })
+    .filter(x=>x.display)
+    .sort((a,b)=>b.bytes-a.bytes)
+    .slice(0,12);
+}
+
+function renderCurrent(){
+  const item=results[current];
+  resultImage.src=item.display;
+  resultImage.alt=item.title;
+  rankLabel.textContent=`Result ${attempts+1} of 3`;
+  fileMeta.innerHTML=
+    `FILE: ${escapeHtml(item.title)}<br>`+
+    `SIZE: ${formatBytes(item.bytes)}<br>`+
+    `DIMENSIONS: ${item.width} × ${item.height}<br>`+
+    `MIME: ${item.mime||'unknown'}`;
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+noBtn.addEventListener('click',()=>{
+  attempts++;
+  if(attempts>=3 || current>=results.length-1){
+    showScreen($('#failScreen'));setState('failure');return
+  }
+  current++;
+  resultImage.animate([{opacity:0,transform:'scale(.985)'},{opacity:1,transform:'scale(1)'}],{duration:450,easing:'ease-out'});
+  renderCurrent();
+});
+yesBtn.addEventListener('click',()=>loadSelected(results[current].display));
+
+createPortraitBtn.addEventListener('click',openCamera);
+backBtn.addEventListener('click',()=>{stopCamera();showScreen($('#failScreen'));setState('failure')});
+
+async function openCamera(){
+  showScreen($('#webcamScreen'));setState('webcam');cameraStatus.textContent='Richiesta accesso alla fotocamera…';
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1600},height:{ideal:1200}},audio:false});
+    video.srcObject=stream;cameraStatus.textContent='';
+  }catch(e){
+    cameraStatus.textContent='Fotocamera non disponibile o permesso negato.';
+  }
+}
+function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
+captureBtn.addEventListener('click',()=>{
+  if(!video.videoWidth){cameraStatus.textContent='Attendi che la fotocamera sia pronta.';return}
+  const c=document.createElement('canvas');c.width=video.videoWidth;c.height=video.videoHeight;
+  const x=c.getContext('2d');x.translate(c.width,0);x.scale(-1,1);x.drawImage(video,0,0);
+  stopCamera();runAnalysis(c);
+});
+
+function loadSelected(url){
+  const img=new Image();img.crossOrigin='anonymous';
+  img.onload=()=>runAnalysis(img);
+  img.onerror=()=>{showScreen($('#failScreen'));setState('failure')};
+  img.src=url;
+}
+
+function runAnalysis(source){
+  selectedSource=source;
+  showScreen($('#analysis'));setState('analysis');
+  analysisBar.style.width='0%';analysisPercent.textContent='0%';analysisStep.textContent='face';
+  const labels=['face','public image','identity','cognition'];
+  let p=0;
+  const timer=setInterval(()=>{
+    p+=4+Math.random()*6;p=Math.min(100,p);
+    analysisBar.style.width=p+'%';analysisPercent.textContent=Math.floor(p)+'%';
+    analysisStep.textContent=labels[Math.min(labels.length-1,Math.floor(p/26))];
+    if(p>=100){clearInterval(timer);setTimeout(()=>startArt(source),450)}
+  },120);
+}
+
+function resizeCanvases(){
+  dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
+  [networkCanvas,portraitCanvas,maskCanvas].forEach(c=>{
+    c.width=Math.floor(W*dpr);c.height=Math.floor(H*dpr);c.style.width=W+'px';c.style.height=H+'px';
+    c.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+  });
+}
+function drawCover(ctx,source){
+  const sw=source.videoWidth||source.naturalWidth||source.width;
+  const sh=source.videoHeight||source.naturalHeight||source.height;
+  const s=Math.max(W/sw,H/sh),dw=sw*s,dh=sh*s;
+  ctx.drawImage(source,(W-dw)/2,(H-dh)/2,dw,dh);
+}
+function startArt(source){
+  showScreen(null);art.classList.remove('hidden');setState('deconstruction');
+  resizeCanvases();drawNetwork();drawPortrait(source);resetMask();
+  artMessage.classList.remove('hide');
+  setTimeout(()=>artMessage.classList.add('hide'),2200);
+}
+function drawPortrait(source){
+  pctx.clearRect(0,0,W,H);drawCover(pctx,source);
+  const g=pctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'rgba(0,0,0,.08)');g.addColorStop(1,'rgba(0,0,0,.28)');
+  pctx.fillStyle=g;pctx.fillRect(0,0,W,H);
+}
+function drawNetwork(){
+  nctx.clearRect(0,0,W,H);nctx.fillStyle='#050505';nctx.fillRect(0,0,W,H);
+  const cx=W/2,cy=H/2;
+  const positions=[];
+  const rx=Math.min(W*.34,390),ry=Math.min(H*.34,360);
+  nodes.forEach((node,i)=>{
+    const a=-Math.PI/2+i*(Math.PI*2/nodes.length);
+    positions.push({x:cx+Math.cos(a)*rx*(i%2?.82:1),y:cy+Math.sin(a)*ry,label:node.label,sub:node.sub});
+  });
+  nctx.strokeStyle='rgba(255,255,255,.12)';nctx.lineWidth=.7;
+  positions.forEach((p,i)=>{
+    [1,3].forEach(step=>{
+      const q=positions[(i+step)%positions.length];
+      nctx.beginPath();nctx.moveTo(p.x,p.y);nctx.lineTo(q.x,q.y);nctx.stroke();
+    })
+  });
+  positions.forEach((p,i)=>{
+    nctx.strokeStyle='rgba(255,255,255,.32)';nctx.lineWidth=1;
+    nctx.beginPath();nctx.arc(p.x,p.y,30,0,Math.PI*2);nctx.stroke();
+    nctx.textAlign='center';nctx.fillStyle='rgba(245,245,240,.96)';nctx.font='500 12px system-ui';
+    nctx.fillText(p.label,p.x,p.y-1);
+    nctx.fillStyle='rgba(165,165,158,.78)';nctx.font='11px system-ui';
+    wrap(nctx,p.sub,p.x,p.y+18,W<700?130:190,15);
+  });
+  nctx.fillStyle='rgba(255,255,255,.96)';nctx.font=`500 ${Math.max(18,Math.min(28,W*.025))}px system-ui`;
+  nctx.textAlign='center';nctx.fillText('THIS IS ALSO ME',cx,cy+5);
+}
+function wrap(ctx,text,x,y,maxWidth,lineHeight){
+  const words=text.split(' ');let line='';
+  for(let i=0;i<words.length;i++){
+    const test=line+words[i]+' ';
+    if(ctx.measureText(test).width>maxWidth&&i){ctx.fillText(line,x,y);line=words[i]+' ';y+=lineHeight}else line=test;
+  }
+  ctx.fillText(line,x,y);
+}
+function resetMask(){
+  mctx.clearRect(0,0,W,H);mctx.fillStyle='#000';mctx.fillRect(0,0,W,H);
+  mctx.globalCompositeOperation='destination-out';
+  progress=0;removePct.textContent='0%';removeBar.style.width='0%';ending.classList.remove('show');started=false;last=null;
+}
+function erase(x,y,pressure=.55){
+  const radius=Math.max(34,Math.min(W,H)*(.05+pressure*.022));
+  mctx.save();mctx.globalCompositeOperation='destination-out';
+  const g=mctx.createRadialGradient(x,y,0,x,y,radius);
+  g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.68,'rgba(0,0,0,.84)');g.addColorStop(1,'rgba(0,0,0,0)');
+  mctx.fillStyle=g;mctx.beginPath();mctx.arc(x,y,radius,0,Math.PI*2);mctx.fill();
+  if(last){mctx.lineCap='round';mctx.lineWidth=radius*1.45;mctx.strokeStyle='rgba(0,0,0,.95)';
+    mctx.beginPath();mctx.moveTo(last.x,last.y);mctx.lineTo(x,y);mctx.stroke()}
+  mctx.restore();last={x,y};
+  progress=Math.min(1,progress+(Math.PI*radius*radius)/(W*H)*.16);
+  const pct=Math.round(progress*100);removePct.textContent=pct+'%';removeBar.style.width=pct+'%';
+  if(progress>.72) ending.classList.add('show');
+}
+function point(e){return{x:e.clientX,y:e.clientY,p:e.pressure||.55}}
+maskCanvas.addEventListener('pointerdown',e=>{erasing=true;maskCanvas.setPointerCapture?.(e.pointerId);const q=point(e);erase(q.x,q.y,q.p)});
+maskCanvas.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||erasing||e.pressure>0){const q=point(e);erase(q.x,q.y,q.p)}});
+maskCanvas.addEventListener('pointerup',()=>{erasing=false;last=null});
+maskCanvas.addEventListener('pointerleave',()=>{if(!erasing)last=null});
+
+restartBtn.addEventListener('click',()=>{
+  ending.classList.remove('show');results=[];current=0;attempts=0;selectedSource=null;
+  queryInput.value='';searchStatus.textContent='';showScreen($('#searchScreen'));setState('search')
+});
+window.addEventListener('resize',()=>{
+  if(!art.classList.contains('hidden')&&selectedSource){
+    resizeCanvases();drawNetwork();drawPortrait(selectedSource);resetMask();
+  }
+});
+})();
+</script>
+</body>
+</html>
