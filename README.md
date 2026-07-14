@@ -1,27 +1,19 @@
-# THIS IS ME? — v5
+# THIS IS ME? — v6
 
-Opera web interattiva.
+## Correzioni principali
+- Layout mobile responsive: nessuna colonna esce più dallo schermo.
+- Prima ricerca mantenuta nell’ordine restituito dalla sorgente.
+- Seconda ricerca con dati reali da Wikipedia quando disponibili.
+- Le informazioni mancanti vengono dichiarate, non inventate.
+- Webcam e caricamento foto restano disponibili.
+- Cancellazione del ritratto e mappa cognitiva finale.
 
-## Flusso
-1. Ricerca per nome.
-2. Un risultato alla volta, nello stesso ordine di pertinenza restituito dal motore.
-3. Tre tentativi di riconoscimento.
-4. Se nessun risultato è corretto: webcam oppure caricamento di una fotografia.
-5. La fotografia scelta innesca una seconda ricerca narrativa di contenuti associati.
-6. Sequenza “Analysing identity”.
-7. Cancellazione interattiva del ritratto.
-8. Emersione della mappa cognitiva.
-9. Finale “THIS IS ALSO ME”.
+## Limite attuale
+La prima ricerca immagini usa ancora Wikimedia Commons, quindi non equivale a Google Images e può non trovare persone comuni. La struttura è pronta per essere collegata in seguito a un provider di ricerca web autorizzato.
 
-## Nota sulla seconda ricerca
-Nel prototipo la seconda ricerca è una simulazione dichiarata di associazioni e inferenze.
-Per collegarla a una vera ricerca inversa servono un provider autorizzato, una API e una funzione server sicura.
+## Pubblicazione
+Sostituisci nel repository GitHub:
+- `index.html`
+- `README.md`
 
-## Avvio
-Per la webcam serve HTTPS oppure localhost.
-
-```bash
-python3 -m http.server 8000
-```
-
-Poi aprire: http://localhost:8000
+Vercel effettuerà automaticamente un nuovo deployment.

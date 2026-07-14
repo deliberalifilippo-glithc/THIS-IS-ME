@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#050505">
-<title>THIS IS ME? — v5</title>
+<title>THIS IS ME? — v6</title>
 <style>
 :root{
   --bg:#050505;
@@ -103,22 +103,40 @@ video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 #ending .small{margin-top:18px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#85857f}
 #ending button{pointer-events:auto;margin-top:22px}
 
+.trace-grid{
+  min-height:420px;padding:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;align-content:center;overflow:hidden
+}
 .trace-card{
-  border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.035);
-  min-height:100px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;
-  opacity:0;transform:translateY(8px) scale(.98);animation:traceIn .65s forwards
+  min-width:0;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.035);
+  min-height:112px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;
+  opacity:0;transform:translateY(8px) scale(.98);animation:traceIn .65s forwards;
+  overflow:hidden
+}
+.trace-card .v{
+  overflow-wrap:anywhere;word-break:break-word
 }
 .trace-card .t{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .trace-card .v{font-size:13px;line-height:1.35;color:var(--fg)}
 @keyframes traceIn{to{opacity:1;transform:none}}
 
 @media(max-width:760px){
-  .result-layout,.webcam-grid{grid-template-columns:1fr}
-  .image-shell,.image-shell img{min-height:300px}
+  body{overflow:auto}
+  #app{position:relative;min-height:100dvh}
+  .screen{position:relative;min-height:100dvh;padding:92px 12px 22px;place-items:start center}
+  .panel{width:100%;max-height:none;overflow:visible;padding:18px;border-radius:20px}
+  .result-layout,.webcam-grid{grid-template-columns:1fr;gap:18px}
+  .image-shell,.image-shell img{min-height:270px}
   .search{flex-direction:column}
-  .screen{padding-top:86px}
-  .panel{padding:20px}
-  .instruction{max-width:44vw}
+  .trace-grid{grid-template-columns:repeat(2,minmax(0,1fr));min-height:0;padding:10px;gap:9px}
+  .trace-card{min-height:118px;padding:11px}
+  .trace-card .v{font-size:12px}
+  .instruction{max-width:48vw}
+  .top{left:14px;right:14px}
+}
+@media(max-width:390px){
+  .trace-grid{grid-template-columns:1fr}
+  .trace-card{min-height:96px}
 }
 </style>
 </head>
@@ -127,7 +145,7 @@ video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
   <div class="top">
     <div class="brand">
       <h1>THIS IS ME?</h1>
-      <p>A Postdigital Recognition Ritual · v5</p>
+      <p>A Postdigital Recognition Ritual · v6</p>
     </div>
     <div class="state" id="stateLabel">search</div>
   </div>
@@ -203,11 +221,11 @@ video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
   <section class="screen hidden" id="inferenceScreen">
     <div class="panel">
       <div class="result-layout">
-        <div class="image-shell" id="traceVisual" style="min-height:420px;padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:center"></div>
+        <div class="image-shell" id="traceVisual" class="trace-grid"></div>
         <div class="meta">
           <div class="eyebrow">SECOND SEARCH</div>
           <h2>Searching beyond the face…</h2>
-          <p>La fotografia scelta innesca una seconda ricerca: non per stabilire chi sei, ma per costruire le tracce che la rete associa alla tua presenza.</p>
+          <p>La fotografia scelta innesca una seconda ricerca pubblica. Le fonti vengono mostrate quando esistono; assenze e incertezze restano visibili.</p>
           <div class="filemeta" id="traceStatus">preparing query…</div>
           <div class="actions">
             <button class="btn primary hidden" id="continueFromTraces">Continua</button>
@@ -405,43 +423,89 @@ uploadPortrait.addEventListener('change',()=>{
   img.src=url;
 });
 
-function runSecondSearch(source){
+async function runSecondSearch(source){
   selectedSource=source;
   showScreen(inferenceScreen);
   setState('inference');
   traceVisual.innerHTML='';
-  traceStatus.textContent='querying public traces…';
+  traceStatus.textContent='querying public sources…';
   continueFromTraces.classList.add('hidden');
 
   const q=queryInput.value.trim() || 'anonymous subject';
-  const traces=[
-    ['NAME', q],
-    ['IMAGE', 'selected portrait'],
-    ['PUBLIC PRESENCE', 'pages, profiles, mentions'],
-    ['VISUAL CONTEXT', 'places, objects, gestures'],
-    ['ASSOCIATIONS', 'topics, interests, activities'],
-    ['NETWORK', 'links, references, echoes'],
-    ['UNCERTAINTY', 'incomplete and inferred'],
-    ['COGNITION', 'not directly observable'],
-    ['STATUS', 'interpretation, not truth']
-  ];
+  const cards=[];
 
-  traces.forEach((item,i)=>{
-    setTimeout(()=>{
-      const card=document.createElement('div');
-      card.className='trace-card';
-      card.style.animationDelay=(i*40)+'ms';
-      card.innerHTML=`<div class="t">${item[0]}</div><div class="v">${item[1]}</div>`;
-      traceVisual.appendChild(card);
-      traceStatus.textContent=`collecting associated traces… ${i+1}/${traces.length}`;
-      if(i===traces.length-1){
-        setTimeout(()=>{
-          traceStatus.textContent='association map assembled';
-          continueFromTraces.classList.remove('hidden');
-        },550);
-      }
-    },i*220);
-  });
+  function addCard(label,value,delay=0){
+    return new Promise(resolve=>{
+      setTimeout(()=>{
+        const card=document.createElement('div');
+        card.className='trace-card';
+        card.innerHTML=`<div class="t">${escapeHtml(label)}</div><div class="v">${escapeHtml(value||'not found')}</div>`;
+        traceVisual.appendChild(card);
+        resolve();
+      },delay);
+    });
+  }
+
+  await addCard('NAME',q,100);
+  await addCard('IMAGE','selected portrait',120);
+
+  try{
+    const endpoint='https://en.wikipedia.org/w/api.php';
+    const params=new URLSearchParams({
+      action:'query',
+      generator:'search',
+      gsrsearch:q,
+      gsrlimit:'1',
+      prop:'extracts|pageimages|categories|links',
+      exintro:'1',
+      explaintext:'1',
+      exsentences:'3',
+      piprop:'thumbnail',
+      pithumbsize:'900',
+      cllimit:'20',
+      pllimit:'30',
+      format:'json',
+      origin:'*'
+    });
+    const response=await fetch(`${endpoint}?${params}`);
+    if(!response.ok) throw new Error('source unavailable');
+    const data=await response.json();
+    const page=Object.values(data.query?.pages||{})[0];
+
+    if(!page){
+      await addCard('PUBLIC SOURCE','no Wikipedia page found',100);
+      await addCard('BIOGRAPHY','not available',100);
+      await addCard('CATEGORIES','not available',100);
+      await addCard('LINKED TOPICS','not available',100);
+    }else{
+      const summary=(page.extract||'No summary available').trim();
+      const categories=(page.categories||[])
+        .map(c=>c.title.replace(/^Category:/,''))
+        .filter(c=>!/(Articles|Pages|CS1|Webarchive|Use dmy|Use mdy)/i.test(c))
+        .slice(0,6).join(' · ') || 'not available';
+      const links=(page.links||[])
+        .map(l=>l.title)
+        .filter(t=>!t.includes(':'))
+        .slice(0,8).join(' · ') || 'not available';
+
+      await addCard('PUBLIC SOURCE',page.title||q,100);
+      await addCard('BIOGRAPHY',summary,100);
+      await addCard('CATEGORIES',categories,100);
+      await addCard('LINKED TOPICS',links,100);
+    }
+  }catch(error){
+    await addCard('PUBLIC SOURCE','source unavailable',100);
+    await addCard('BIOGRAPHY','could not be retrieved',100);
+    await addCard('CATEGORIES','could not be retrieved',100);
+    await addCard('LINKED TOPICS','could not be retrieved',100);
+  }
+
+  await addCard('UNCERTAINTY','public data is partial and context-dependent',100);
+  await addCard('COGNITION','not directly observable from a portrait',100);
+  await addCard('STATUS','association is not identity',100);
+
+  traceStatus.textContent='public trace map assembled';
+  continueFromTraces.classList.remove('hidden');
 }
 
 continueFromTraces.addEventListener('click',()=>{
