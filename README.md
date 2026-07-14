@@ -1,34 +1,27 @@
-# THIS IS ME? — v4
+# THIS IS ME? — v5
 
 Opera web interattiva.
 
-## Funzioni
-- Ricerca immagini tramite Wikimedia Commons
-- Un risultato alla volta
-- Ordinamento per dimensione in byte del file originale
-- Tre tentativi di riconoscimento
-- Webcam locale come fallback
-- Sequenza “Analysing identity”
-- Cancellazione interattiva del ritratto
-- Rivelazione di una mappa cognitiva
-- Finale “THIS IS ALSO ME”
+## Flusso
+1. Ricerca per nome.
+2. Un risultato alla volta, nello stesso ordine di pertinenza restituito dal motore.
+3. Tre tentativi di riconoscimento.
+4. Se nessun risultato è corretto: webcam oppure caricamento di una fotografia.
+5. La fotografia scelta innesca una seconda ricerca narrativa di contenuti associati.
+6. Sequenza “Analysing identity”.
+7. Cancellazione interattiva del ritratto.
+8. Emersione della mappa cognitiva.
+9. Finale “THIS IS ALSO ME”.
 
-## Avvio locale
-La webcam richiede HTTPS oppure localhost.
+## Nota sulla seconda ricerca
+Nel prototipo la seconda ricerca è una simulazione dichiarata di associazioni e inferenze.
+Per collegarla a una vera ricerca inversa servono un provider autorizzato, una API e una funzione server sicura.
 
-Da terminale, dentro la cartella:
+## Avvio
+Per la webcam serve HTTPS oppure localhost.
 
+```bash
 python3 -m http.server 8000
+```
 
-Poi apri:
-http://localhost:8000
-
-## Pubblicazione
-Compatibile con hosting statico:
-- Netlify
-- Vercel
-- GitHub Pages
-
-## Privacy
-La webcam è elaborata localmente nel browser.
-Il prototipo non salva né invia fotografie a un server proprio.
+Poi aprire: http://localhost:8000

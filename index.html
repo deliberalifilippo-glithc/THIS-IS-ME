@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#050505">
-<title>THIS IS ME? — A Postdigital Recognition Ritual</title>
+<title>THIS IS ME? — v5</title>
 <style>
 :root{
   --bg:#050505;
@@ -103,6 +103,15 @@ video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 #ending .small{margin-top:18px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#85857f}
 #ending button{pointer-events:auto;margin-top:22px}
 
+.trace-card{
+  border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.035);
+  min-height:100px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;
+  opacity:0;transform:translateY(8px) scale(.98);animation:traceIn .65s forwards
+}
+.trace-card .t{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.trace-card .v{font-size:13px;line-height:1.35;color:var(--fg)}
+@keyframes traceIn{to{opacity:1;transform:none}}
+
 @media(max-width:760px){
   .result-layout,.webcam-grid{grid-template-columns:1fr}
   .image-shell,.image-shell img{min-height:300px}
@@ -118,7 +127,7 @@ video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
   <div class="top">
     <div class="brand">
       <h1>THIS IS ME?</h1>
-      <p>A Postdigital Recognition Ritual</p>
+      <p>A Postdigital Recognition Ritual · v5</p>
     </div>
     <div class="state" id="stateLabel">search</div>
   </div>
@@ -148,7 +157,7 @@ video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
         <div class="meta">
           <div class="eyebrow" id="rankLabel">Result 1 of 3</div>
           <h2>Is this you?</h2>
-          <p>Il sistema mostra un solo risultato, scegliendo prima il file originale più grande disponibile.</p>
+          <p>Il sistema mostra un solo risultato alla volta, seguendo l’ordine di pertinenza restituito dal motore.</p>
           <div class="filemeta" id="fileMeta"></div>
           <div class="actions">
             <button class="btn primary yes" id="yesBtn">Questo sono io</button>
@@ -164,7 +173,11 @@ video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
       <div class="fail">
         <h2>The Internet<br>doesn’t know who you are.</h2>
         <p>Dopo tre tentativi, il sistema non è riuscito a restituire un’immagine in cui ti riconosci.</p>
-        <button class="btn primary" id="createPortraitBtn">Crea un nuovo ritratto</button>
+        <div class="actions" style="justify-content:center">
+          <button class="btn primary" id="createPortraitBtn">Usa la webcam</button>
+          <label class="btn soft" for="uploadPortrait" style="display:inline-flex;align-items:center">Carica una foto</label>
+          <input id="uploadPortrait" type="file" accept="image/*" class="hidden">
+        </div>
       </div>
     </div>
   </section>
@@ -181,6 +194,24 @@ video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
             <button class="btn soft" id="backBtn">Torna indietro</button>
           </div>
           <div class="note" id="cameraStatus"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="screen hidden" id="inferenceScreen">
+    <div class="panel">
+      <div class="result-layout">
+        <div class="image-shell" id="traceVisual" style="min-height:420px;padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:center"></div>
+        <div class="meta">
+          <div class="eyebrow">SECOND SEARCH</div>
+          <h2>Searching beyond the face…</h2>
+          <p>La fotografia scelta innesca una seconda ricerca: non per stabilire chi sei, ma per costruire le tracce che la rete associa alla tua presenza.</p>
+          <div class="filemeta" id="traceStatus">preparing query…</div>
+          <div class="actions">
+            <button class="btn primary hidden" id="continueFromTraces">Continua</button>
+          </div>
         </div>
       </div>
     </div>
@@ -224,12 +255,13 @@ video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 (() => {
 'use strict';
 const $ = s => document.querySelector(s);
-const screens = ['searchScreen','resultScreen','failScreen','webcamScreen','analysis'].map(id=>$('#'+id));
+const screens = ['searchScreen','resultScreen','failScreen','webcamScreen','inferenceScreen','analysis'].map(id=>$('#'+id));
 const art=$('#art'), stateLabel=$('#stateLabel');
 const searchForm=$('#searchForm'), queryInput=$('#query'), searchStatus=$('#searchStatus');
 const resultImage=$('#resultImage'), rankLabel=$('#rankLabel'), fileMeta=$('#fileMeta');
 const yesBtn=$('#yesBtn'), noBtn=$('#noBtn');
-const createPortraitBtn=$('#createPortraitBtn'), video=$('#video'), captureBtn=$('#captureBtn'), backBtn=$('#backBtn'), cameraStatus=$('#cameraStatus');
+const createPortraitBtn=$('#createPortraitBtn'), uploadPortrait=$('#uploadPortrait'), video=$('#video'), captureBtn=$('#captureBtn'), backBtn=$('#backBtn'), cameraStatus=$('#cameraStatus');
+const inferenceScreen=$('#inferenceScreen'), traceVisual=$('#traceVisual'), traceStatus=$('#traceStatus'), continueFromTraces=$('#continueFromTraces');
 const analysisBar=$('#analysisBar'), analysisPercent=$('#analysisPercent'), analysisStep=$('#analysisStep');
 const networkCanvas=$('#network'), portraitCanvas=$('#portrait'), maskCanvas=$('#mask');
 const nctx=networkCanvas.getContext('2d'), pctx=portraitCanvas.getContext('2d'), mctx=maskCanvas.getContext('2d');
@@ -270,7 +302,7 @@ searchForm.addEventListener('submit',async e=>{
   setState('searching');
   try{
     results=await searchCommons(q);
-    if(!results.length){searchStatus.textContent='Nessun risultato trovato.';setState('search');return}
+    if(!results.length){showScreen($('#failScreen'));setState('failure');return}
     current=0;attempts=0;renderCurrent();showScreen($('#resultScreen'));setState('recognition');
   }catch(err){
     searchStatus.textContent='La ricerca non è disponibile in questo momento.';
@@ -309,7 +341,6 @@ async function searchCommons(query){
       }
     })
     .filter(x=>x.display)
-    .sort((a,b)=>b.bytes-a.bytes)
     .slice(0,12);
 }
 
@@ -354,15 +385,68 @@ captureBtn.addEventListener('click',()=>{
   if(!video.videoWidth){cameraStatus.textContent='Attendi che la fotocamera sia pronta.';return}
   const c=document.createElement('canvas');c.width=video.videoWidth;c.height=video.videoHeight;
   const x=c.getContext('2d');x.translate(c.width,0);x.scale(-1,1);x.drawImage(video,0,0);
-  stopCamera();runAnalysis(c);
+  stopCamera();runSecondSearch(c);
 });
 
 function loadSelected(url){
   const img=new Image();img.crossOrigin='anonymous';
-  img.onload=()=>runAnalysis(img);
+  img.onload=()=>runSecondSearch(img);
   img.onerror=()=>{showScreen($('#failScreen'));setState('failure')};
   img.src=url;
 }
+
+
+uploadPortrait.addEventListener('change',()=>{
+  const file=uploadPortrait.files?.[0];
+  if(!file) return;
+  const url=URL.createObjectURL(file);
+  const img=new Image();
+  img.onload=()=>{ URL.revokeObjectURL(url); runSecondSearch(img); };
+  img.src=url;
+});
+
+function runSecondSearch(source){
+  selectedSource=source;
+  showScreen(inferenceScreen);
+  setState('inference');
+  traceVisual.innerHTML='';
+  traceStatus.textContent='querying public traces…';
+  continueFromTraces.classList.add('hidden');
+
+  const q=queryInput.value.trim() || 'anonymous subject';
+  const traces=[
+    ['NAME', q],
+    ['IMAGE', 'selected portrait'],
+    ['PUBLIC PRESENCE', 'pages, profiles, mentions'],
+    ['VISUAL CONTEXT', 'places, objects, gestures'],
+    ['ASSOCIATIONS', 'topics, interests, activities'],
+    ['NETWORK', 'links, references, echoes'],
+    ['UNCERTAINTY', 'incomplete and inferred'],
+    ['COGNITION', 'not directly observable'],
+    ['STATUS', 'interpretation, not truth']
+  ];
+
+  traces.forEach((item,i)=>{
+    setTimeout(()=>{
+      const card=document.createElement('div');
+      card.className='trace-card';
+      card.style.animationDelay=(i*40)+'ms';
+      card.innerHTML=`<div class="t">${item[0]}</div><div class="v">${item[1]}</div>`;
+      traceVisual.appendChild(card);
+      traceStatus.textContent=`collecting associated traces… ${i+1}/${traces.length}`;
+      if(i===traces.length-1){
+        setTimeout(()=>{
+          traceStatus.textContent='association map assembled';
+          continueFromTraces.classList.remove('hidden');
+        },550);
+      }
+    },i*220);
+  });
+}
+
+continueFromTraces.addEventListener('click',()=>{
+  runAnalysis(selectedSource);
+});
 
 function runAnalysis(source){
   selectedSource=source;
