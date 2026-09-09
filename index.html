@@ -3,622 +3,97 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#050505">
-<title>THIS IS ME? — v6</title>
+<meta name="theme-color" content="#030505">
+<title>THIS IS ME? — v7 Postdigital Position</title>
 <style>
-:root{
-  --bg:#050505;
-  --fg:#f3f3ef;
-  --muted:#9a9a92;
-  --line:rgba(255,255,255,.14);
-  --panel:rgba(8,8,8,.78);
-  --soft:rgba(255,255,255,.055);
-}
-*{box-sizing:border-box}
-html,body{width:100%;height:100%;margin:0;background:var(--bg);color:var(--fg);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body{overflow:hidden}
-button,input{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-#app{position:fixed;inset:0;background:
-  radial-gradient(circle at 50% 35%,rgba(255,255,255,.035),transparent 32%),
-  linear-gradient(180deg,#050505,#090909 60%,#050505)}
-.top{
-  position:absolute;z-index:30;left:20px;right:20px;top:18px;display:flex;justify-content:space-between;
-  align-items:flex-start;gap:20px;pointer-events:none
-}
-.brand h1{margin:0;font-size:clamp(20px,3.4vw,40px);font-weight:520;letter-spacing:-.045em}
-.brand p{margin:.4rem 0 0;color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
-.state{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-top:7px}
-.screen{position:absolute;inset:0;display:grid;place-items:center;padding:90px 18px 28px}
-.panel{
-  width:min(980px,100%);max-height:calc(100vh - 130px);overflow:auto;background:var(--panel);
-  border:1px solid var(--line);backdrop-filter:blur(20px);border-radius:24px;padding:clamp(20px,4vw,46px);
-  box-shadow:0 36px 110px rgba(0,0,0,.5)
-}
-.hero{text-align:center;max-width:760px;margin:0 auto}
-.hero h2{margin:0;font-size:clamp(32px,6vw,78px);line-height:.98;letter-spacing:-.055em;font-weight:490}
-.hero p{max-width:620px;margin:1.2rem auto 1.6rem;color:#b8b8b0;line-height:1.65}
-.search{display:flex;gap:10px;max-width:660px;margin:0 auto}
-.search input{flex:1;min-width:0;border-radius:999px;border:1px solid var(--line);background:var(--soft);
-  color:var(--fg);padding:14px 18px;outline:none}
-.search input:focus{border-color:rgba(255,255,255,.38)}
-.btn{border:1px solid var(--line);border-radius:999px;padding:12px 17px;color:var(--fg);background:transparent}
-.btn.primary{background:var(--fg);color:#080808;border-color:transparent}
-.btn.soft{background:var(--soft)}
-.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:13px}
-#searchStatus{min-height:18px;margin-top:10px;font-size:12px;color:#c8c8c2}
-
-.result-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center}
-.image-shell{position:relative;background:#0b0b0b;border:1px solid var(--line);border-radius:20px;overflow:hidden;min-height:380px}
-.image-shell img{width:100%;height:100%;min-height:380px;object-fit:contain;display:block;background:#000}
-.scan{position:absolute;inset:0;pointer-events:none;background:
-  linear-gradient(180deg,transparent 0%,rgba(255,255,255,.06) 50%,transparent 100%);
-  transform:translateY(-100%);animation:scan 2.5s linear infinite}
-@keyframes scan{to{transform:translateY(100%)}}
-.meta .eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-.meta h2{font-size:clamp(28px,4vw,54px);letter-spacing:-.045em;line-height:1.02;font-weight:500;margin:.7rem 0}
-.meta p{color:#bdbdb6;line-height:1.6}
-.filemeta{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--muted);line-height:1.8;margin:18px 0}
-.actions{display:flex;gap:10px;flex-wrap:wrap}
-.actions .yes{min-width:150px}
-.fail{text-align:center;max-width:700px;margin:0 auto}
-.fail h2{font-size:clamp(34px,6vw,76px);line-height:1;letter-spacing:-.055em;font-weight:500;margin:0}
-.fail p{color:#b8b8b0;line-height:1.6}
-.webcam-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center}
-.video-shell{aspect-ratio:4/3;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:#000}
-video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
-.webcam-copy h2{font-size:clamp(30px,5vw,62px);line-height:1;letter-spacing:-.05em;font-weight:500;margin:0}
-.webcam-copy p{color:#b8b8b0;line-height:1.65}
-
-#analysis{background:#000}
-.analysis-box{text-align:center;max-width:680px}
-.analysis-box h2{font-size:clamp(26px,5vw,60px);letter-spacing:-.045em;font-weight:500;margin:0 0 20px}
-.analysis-track{height:2px;background:rgba(255,255,255,.12);overflow:hidden}
-.analysis-track span{display:block;height:100%;width:0;background:var(--fg);transition:width .25s linear}
-.analysis-copy{display:flex;justify-content:space-between;font:11px ui-monospace,monospace;color:var(--muted);margin-top:9px}
-
-#art{position:absolute;inset:0;touch-action:none;user-select:none}
-#network,#portrait,#mask{position:absolute;inset:0;width:100%;height:100%;display:block}
-#network{z-index:1} #portrait{z-index:2} #mask{z-index:3}
-.art-overlay{position:absolute;z-index:5;inset:0;pointer-events:none}
-.art-message{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;
-  font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72);
-  opacity:1;transition:opacity 1s ease}
-.art-message.hide{opacity:0}
-.art-bottom{position:absolute;left:20px;right:20px;bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
-.progress{width:min(320px,48vw)}
-.prow{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.pbar{height:2px;background:rgba(255,255,255,.1);margin-top:8px}
-.pbar span{display:block;height:100%;width:0;background:var(--fg)}
-.instruction{max-width:420px;text-align:right;color:var(--muted);font-size:11px;line-height:1.5}
-#ending{position:absolute;z-index:6;inset:0;display:grid;place-items:center;text-align:center;padding:24px;
-  background:rgba(5,5,5,.22);opacity:0;pointer-events:none;transition:opacity 1.4s ease}
-#ending.show{opacity:1}
-#ending .inner{max-width:780px}
-#ending .kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
-#ending h2{font-size:clamp(38px,7vw,94px);line-height:.96;letter-spacing:-.06em;font-weight:500;margin:.9rem 0}
-#ending p{color:#bdbdb7;line-height:1.65;margin:0 auto;max-width:620px}
-#ending .small{margin-top:18px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#85857f}
-#ending button{pointer-events:auto;margin-top:22px}
-
-.trace-grid{
-  min-height:420px;padding:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:10px;align-content:center;overflow:hidden
-}
-.trace-card{
-  min-width:0;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.035);
-  min-height:112px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;
-  opacity:0;transform:translateY(8px) scale(.98);animation:traceIn .65s forwards;
-  overflow:hidden
-}
-.trace-card .v{
-  overflow-wrap:anywhere;word-break:break-word
-}
-.trace-card .t{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-.trace-card .v{font-size:13px;line-height:1.35;color:var(--fg)}
-@keyframes traceIn{to{opacity:1;transform:none}}
-
-@media(max-width:760px){
-  body{overflow:auto}
-  #app{position:relative;min-height:100dvh}
-  .screen{position:relative;min-height:100dvh;padding:92px 12px 22px;place-items:start center}
-  .panel{width:100%;max-height:none;overflow:visible;padding:18px;border-radius:20px}
-  .result-layout,.webcam-grid{grid-template-columns:1fr;gap:18px}
-  .image-shell,.image-shell img{min-height:270px}
-  .search{flex-direction:column}
-  .trace-grid{grid-template-columns:repeat(2,minmax(0,1fr));min-height:0;padding:10px;gap:9px}
-  .trace-card{min-height:118px;padding:11px}
-  .trace-card .v{font-size:12px}
-  .instruction{max-width:48vw}
-  .top{left:14px;right:14px}
-}
-@media(max-width:390px){
-  .trace-grid{grid-template-columns:1fr}
-  .trace-card{min-height:96px}
-}
+:root{--bg:#030505;--panel:rgba(5,13,15,.82);--line:#16393e;--cyan:#50eeee;--fg:#f2f7f7;--muted:#7f9699}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#000;color:var(--fg);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{overflow:hidden}button,input{font:inherit}.hidden{display:none!important}
+#app{position:fixed;inset:0;overflow:hidden;background:radial-gradient(circle at 50% 28%,rgba(80,238,238,.08),transparent 38%),linear-gradient(180deg,#030505,#020303)}
+#ambient{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}.shell{position:relative;z-index:2;height:100%;display:flex;flex-direction:column}
+header{height:66px;flex:0 0 66px;padding:12px 15px;border-bottom:1px solid rgba(80,238,238,.18);display:flex;justify-content:space-between;align-items:center;background:rgba(2,4,5,.74);backdrop-filter:blur(10px);font:10px/1.35 ui-monospace,monospace}.brand{font-weight:700;letter-spacing:.14em}.engine{color:var(--muted);margin-top:3px}.status{text-align:right;color:var(--cyan);letter-spacing:.08em}.progress{height:2px;background:rgba(80,238,238,.1);position:relative}.progress span{position:absolute;inset:0 auto 0 0;width:0;background:var(--cyan);transition:width .55s ease}
+.stage{position:relative;flex:1;min-height:0;overflow:hidden}.screen{position:absolute;inset:0;padding:24px 17px 18px;overflow:auto;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .42s ease,transform .42s ease}.screen.active{opacity:1;transform:none;pointer-events:auto}.screen::-webkit-scrollbar{display:none}
+.kicker{font:10px ui-monospace,monospace;letter-spacing:.14em;color:var(--cyan);text-transform:uppercase}h1{font-size:38px;line-height:.98;letter-spacing:-.045em;margin:15px 0 12px;max-width:10ch}h2{font-size:29px;line-height:1.04;letter-spacing:-.035em;margin:14px 0 10px}.lead{font-size:14px;line-height:1.55;color:#a8b9bb;max-width:40ch}.mono{font-family:ui-monospace,monospace}
+.action{width:100%;border:1px solid var(--cyan);background:rgba(80,238,238,.07);color:var(--cyan);padding:15px 16px;border-radius:14px;margin-top:20px;font:12px ui-monospace,monospace;letter-spacing:.08em}.action.secondary{border-color:var(--line);color:var(--fg);background:rgba(7,16,19,.76)}.action:disabled{opacity:.35}.textbox{width:100%;margin-top:24px;border:0;border-bottom:1px solid var(--cyan);padding:14px 2px;background:transparent;color:var(--fg);outline:none;font-size:23px}.smallnote{margin-top:10px;color:var(--muted);font:10px/1.5 ui-monospace,monospace}
+.system-msg{margin-top:24px;padding:15px;border:1px solid var(--line);border-radius:14px;background:rgba(5,13,15,.77);font:12px/1.55 ui-monospace,monospace;color:#b7c8ca}.result-card{margin-top:17px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(5,12,14,.84)}.result-card img{width:100%;height:290px;object-fit:contain;background:#050505;filter:grayscale(1)}.result-meta{padding:14px;font:10px/1.55 ui-monospace,monospace;color:var(--muted)}.result-meta b{display:block;color:var(--fg);font-size:12px;margin-bottom:4px}.dual{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 14px 14px}.dual .action{margin:0}
+.trace-pill{display:inline-flex;align-items:center;gap:7px;margin:5px 5px 0 0;padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:rgba(4,11,13,.7);font:9px ui-monospace,monospace;color:#b5c8ca}.dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.upload{display:block;margin-top:22px;border:1px dashed var(--cyan);border-radius:20px;padding:30px 16px;text-align:center;background:rgba(80,238,238,.04);cursor:pointer}.upload input{display:none}.upload strong{font:12px ui-monospace,monospace;color:var(--cyan)}.photo-preview{margin-top:18px;height:315px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#111;display:none}.photo-preview img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.12)}
+.question-card{margin-top:18px;padding:17px;border:1px solid var(--line);border-radius:18px;background:rgba(5,13,15,.82)}.qcount{font:10px ui-monospace,monospace;color:var(--cyan)}.question{font-size:23px;line-height:1.08;margin:13px 0 17px}.options{display:grid;gap:9px}.option{text-align:left;border:1px solid var(--line);border-radius:13px;padding:13px 14px;background:rgba(7,17,19,.86);color:var(--fg);font:11px ui-monospace,monospace}.option.selected{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 26px rgba(80,238,238,.1)}.flash-node{width:12px;height:12px;border-radius:50%;background:var(--cyan);box-shadow:0 0 22px 6px rgba(80,238,238,.5);margin:20px auto;animation:born .8s ease both}@keyframes born{from{opacity:0;transform:scale(.1)}70%{opacity:1;transform:scale(1.7)}to{transform:scale(1)}}
+.scratch-wrap{position:relative;margin-top:19px;height:390px;border:1px solid var(--line);border-radius:19px;overflow:hidden;background:#061012}.scratch-under{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:25px;background:radial-gradient(circle at center,rgba(80,238,238,.16),transparent 55%)}.scratch-under .constellation{font:10px/1.9 ui-monospace,monospace;color:#9db5b8}#scratch{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.map-box{position:relative;height:450px;margin-top:16px;border:1px solid var(--line);border-radius:18px;background:rgba(2,7,8,.44);overflow:hidden}#mapCanvas{width:100%;height:100%;touch-action:none}.node-info{margin-top:12px;padding:13px;border:1px solid var(--line);border-radius:14px;background:rgba(5,13,15,.84);min-height:76px;font:10px/1.55 ui-monospace,monospace;color:var(--muted)}.node-info b{color:var(--cyan);display:block;margin-bottom:4px}.legend-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.legend-chip{font:9px ui-monospace,monospace;border:1px solid var(--line);padding:6px 8px;border-radius:999px;color:#afc1c3}
+.summary{margin-top:18px;border-top:1px solid var(--line)}.stat{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid rgba(22,57,62,.65);font:11px ui-monospace,monospace}.stat span:last-child{color:var(--cyan)}.final{min-height:100%;display:flex;flex-direction:column;justify-content:center;text-align:center;padding-bottom:30px}.final h1{max-width:none;font-size:51px;margin:27px 0 18px}.final .line{font-size:16px;color:#b3c4c6;line-height:1.55}.final .big{margin-top:46px;color:var(--cyan);font:700 23px ui-monospace,monospace;letter-spacing:.12em}
+footer{min-height:48px;padding:9px 14px calc(9px + env(safe-area-inset-bottom));border-top:1px solid rgba(80,238,238,.16);display:flex;justify-content:space-between;align-items:center;background:rgba(2,4,5,.78);font:9px ui-monospace,monospace;color:var(--muted)}.skip{border:0;background:transparent;color:var(--muted);font:9px ui-monospace,monospace}
+@media(min-width:720px){body{display:grid;place-items:center;background:#050707}#app{position:relative;width:430px;height:min(900px,96vh);border:1px solid var(--line);border-radius:24px;box-shadow:0 30px 90px #000}}
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="top">
-    <div class="brand">
-      <h1>THIS IS ME?</h1>
-      <p>A Postdigital Recognition Ritual · v6</p>
-    </div>
-    <div class="state" id="stateLabel">search</div>
-  </div>
-
-  <section class="screen" id="searchScreen">
-    <div class="panel">
-      <div class="hero">
-        <h2>Search yourself.</h2>
-        <p>Internet proverà a riconoscerti attraverso le sue immagini. Tu potrai accettare o rifiutare quella rappresentazione.</p>
-        <form class="search" id="searchForm">
-          <input id="query" placeholder="Nome e cognome" autocomplete="name">
-          <button class="btn primary">Cerca</button>
-        </form>
-        <div id="searchStatus"></div>
-        <div class="note">La ricerca usa Wikimedia Commons. La webcam viene elaborata localmente e nessuna foto viene salvata dal prototipo.</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="screen hidden" id="resultScreen">
-    <div class="panel">
-      <div class="result-layout">
-        <div class="image-shell">
-          <img id="resultImage" alt="">
-          <div class="scan"></div>
-        </div>
-        <div class="meta">
-          <div class="eyebrow" id="rankLabel">Result 1 of 3</div>
-          <h2>Is this you?</h2>
-          <p>Il sistema mostra un solo risultato alla volta, seguendo l’ordine di pertinenza restituito dal motore.</p>
-          <div class="filemeta" id="fileMeta"></div>
-          <div class="actions">
-            <button class="btn primary yes" id="yesBtn">Questo sono io</button>
-            <button class="btn soft" id="noBtn">Non sono io →</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="screen hidden" id="failScreen">
-    <div class="panel">
-      <div class="fail">
-        <h2>The Internet<br>doesn’t know who you are.</h2>
-        <p>Dopo tre tentativi, il sistema non è riuscito a restituire un’immagine in cui ti riconosci.</p>
-        <div class="actions" style="justify-content:center">
-          <button class="btn primary" id="createPortraitBtn">Usa la webcam</button>
-          <label class="btn soft" for="uploadPortrait" style="display:inline-flex;align-items:center">Carica una foto</label>
-          <input id="uploadPortrait" type="file" accept="image/*" class="hidden">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="screen hidden" id="webcamScreen">
-    <div class="panel">
-      <div class="webcam-grid">
-        <div class="video-shell"><video id="video" autoplay playsinline muted></video></div>
-        <div class="webcam-copy">
-          <h2>Create a new portrait.</h2>
-          <p>La fotocamera serve soltanto a creare l’immagine sul tuo dispositivo. Nessuna fotografia viene caricata dal prototipo.</p>
-          <div class="actions">
-            <button class="btn primary" id="captureBtn">Scatta</button>
-            <button class="btn soft" id="backBtn">Torna indietro</button>
-          </div>
-          <div class="note" id="cameraStatus"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <section class="screen hidden" id="inferenceScreen">
-    <div class="panel">
-      <div class="result-layout">
-        <div class="image-shell" id="traceVisual" class="trace-grid"></div>
-        <div class="meta">
-          <div class="eyebrow">SECOND SEARCH</div>
-          <h2>Searching beyond the face…</h2>
-          <p>La fotografia scelta innesca una seconda ricerca pubblica. Le fonti vengono mostrate quando esistono; assenze e incertezze restano visibili.</p>
-          <div class="filemeta" id="traceStatus">preparing query…</div>
-          <div class="actions">
-            <button class="btn primary hidden" id="continueFromTraces">Continua</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="screen hidden" id="analysis">
-    <div class="analysis-box">
-      <h2>Analysing identity…</h2>
-      <div class="analysis-track"><span id="analysisBar"></span></div>
-      <div class="analysis-copy"><span id="analysisStep">face</span><span id="analysisPercent">0%</span></div>
-    </div>
-  </section>
-
-  <section id="art" class="hidden">
-    <canvas id="network"></canvas>
-    <canvas id="portrait"></canvas>
-    <canvas id="mask"></canvas>
-    <div class="art-overlay">
-      <div class="art-message" id="artMessage">Recognition completed.</div>
-      <div class="art-bottom">
-        <div class="progress">
-          <div class="prow"><span>portrait removed</span><span id="removePct">0%</span></div>
-          <div class="pbar"><span id="removeBar"></span></div>
-        </div>
-        <div class="instruction">Muovi il dito o il mouse. Il volto scompare. Sotto emerge il modo in cui i media partecipano al pensiero.</div>
-      </div>
-    </div>
-    <div id="ending">
-      <div class="inner">
-        <div class="kicker">postdigital positionality</div>
-        <h2>THIS IS ALSO ME.</h2>
-        <p>Il volto è parte dell’identità, ma non la esaurisce. Sotto l’immagine emergono attenzione, ricerca, verifica, memoria, studio, creazione e pausa.</p>
-        <div class="small">No image was deleted. Only assumptions.</div>
-        <button class="btn soft" id="restartBtn">Ricomincia</button>
-      </div>
-    </div>
-  </section>
-</div>
-
+<canvas id="ambient"></canvas>
+<div class="shell">
+<header><div><div class="brand">THIS IS ME?</div><div class="engine">Representation Engine v7</div></div><div class="status"><div id="act">ACT I</div><div id="status">BEFORE YOU</div></div></header>
+<div class="progress"><span id="bar"></span></div>
+<main class="stage">
+<section class="screen active" data-screen="0"><div class="kicker">Postdigital positionality</div><h1>You are already represented.</h1><p class="lead">Before entering this interface, search engines, platforms and public traces may already have produced a version of you.</p><input class="textbox" id="nameInput" autocomplete="off" placeholder="TYPE YOUR NAME"><button class="action" id="startBtn">SEARCH MY PUBLIC REPRESENTATION</button><div class="smallnote">No identity will be discovered. Only traces will be processed.</div><div id="searchStatus" class="smallnote"></div></section>
+<section class="screen" data-screen="1"><div class="kicker">Public trace / <span id="resultNo">01</span></div><h2>Is this you?</h2><div class="result-card"><img id="resultImage" alt=""><div class="result-meta"><b id="resultTitle">PUBLIC RESULT</b><span id="resultMeta"></span></div><div class="dual"><button class="action secondary" id="yesBtn">YES</button><button class="action" id="noBtn">NO</button></div></div></section>
+<section class="screen" data-screen="2"><div class="kicker">Search completed</div><h1>I found traces. I did not find you.</h1><p class="lead">A public representation is always partial. Every rejected image remains visible as a record of the system’s error.</p><div id="rejectedPills"></div><div class="system-msg">REJECTED ASSUMPTIONS: <span id="rejCount">00</span><br>IDENTITY STATUS: NOT ESTABLISHED<br>REPRESENTATION STATUS: INCOMPLETE</div><button class="action" id="toPhoto">ENTER THE REPRESENTATION</button></section>
+<section class="screen" data-screen="3"><div class="kicker">Inhabiting</div><h1>Add another trace.</h1><p class="lead">A face makes you visible. It does not locate you.</p><label class="upload"><input type="file" id="photoInput" accept="image/*" capture="user"><strong>TAKE OR CHOOSE A PHOTOGRAPH</strong><div class="smallnote">The image remains on this device.</div></label><div class="photo-preview" id="photoPreview"><img id="photoImg" alt=""></div><button class="action" id="photoNext" disabled>CONTINUE</button></section>
+<section class="screen" data-screen="4"><div class="kicker">Declared traces</div><h2>Help me understand how you inhabit media.</h2><div class="question-card"><div class="qcount" id="qcount">QUESTION 1 / 5</div><div class="question" id="question"></div><div class="options" id="options"></div></div><div id="born"></div></section>
+<section class="screen" data-screen="5"><div class="kicker">Entanglement</div><h2>Remove what looks like you.</h2><p class="lead">Under the portrait there is no true self. There are relations, traces, capabilities, refusals and unknown areas.</p><div class="scratch-wrap"><div class="scratch-under"><div class="constellation">PUBLIC TRACE · DECLARED TRACE · AUTHOR TRACE<br>MEDIATED CAPABILITY · SYSTEM INFERENCE · REJECTED · UNKNOWN<br><br>CURRENT POSITION</div></div><canvas id="scratch"></canvas></div><button class="action" id="toMap">REVEAL POSITIONAL MAP</button></section>
+<section class="screen" data-screen="6"><div class="kicker">Current position</div><h2>Your position meets the author’s.</h2><p class="lead">Shared technological environments do not make two people identical. They create relations, overlaps and differences.</p><div class="legend-row"><span class="legend-chip">● DECLARED</span><span class="legend-chip">◎ AUTHOR</span><span class="legend-chip">◇ CAPABILITY</span><span class="legend-chip">× PUBLIC / REJECTED</span></div><div class="map-box"><canvas id="mapCanvas"></canvas></div><div class="node-info" id="nodeInfo"><b>CURRENT POSITION</b>Tap a luminous point to inspect its source.</div><button class="action" id="toSummary">BUILD REPRESENTATION SUMMARY</button></section>
+<section class="screen" data-screen="7"><div class="kicker">Position</div><h1>Incomplete by design.</h1><p class="lead">This interface records relations and contradictions. It does not produce a complete subject.</p><div class="summary"><div class="stat"><span>PUBLIC TRACES</span><span id="sumPublic">00</span></div><div class="stat"><span>DECLARED TRACES</span><span id="sumDeclared">05</span></div><div class="stat"><span>MEDIATED CAPABILITIES</span><span id="sumCapabilities">00</span></div><div class="stat"><span>AUTHOR RELATIONS</span><span id="sumRelations">00</span></div><div class="stat"><span>REJECTED ASSUMPTIONS</span><span id="sumRejected">00</span></div><div class="stat"><span>UNMAPPED AREAS</span><span>UNKNOWN</span></div></div><button class="action" id="toFinal">CONTINUE</button></section>
+<section class="screen" data-screen="8"><div class="final"><div class="kicker">Reflection</div><div class="line">This is not you.</div><div class="line" style="margin-top:18px">This is a position that happened here.</div><div class="line" style="margin-top:18px">It exists between what was found, what you declared, what you refused, what technology allowed you to do, the author, and the system observing the relation.</div><div class="line" style="margin-top:28px">I am not only what I know.<br>I am also what my relations allow me to do.</div><div class="big">THIS IS ALSO ME.</div><div class="smallnote" id="sessionTime" style="margin-top:36px"></div><button class="action secondary" id="restart">ERASE SESSION</button></div></section>
+</main>
+<footer><span id="traceCount">TRACES 00</span><button class="skip" id="resetBtn">RESET SESSION</button></footer>
+</div></div>
 <script>
-(() => {
-'use strict';
-const $ = s => document.querySelector(s);
-const screens = ['searchScreen','resultScreen','failScreen','webcamScreen','inferenceScreen','analysis'].map(id=>$('#'+id));
-const art=$('#art'), stateLabel=$('#stateLabel');
-const searchForm=$('#searchForm'), queryInput=$('#query'), searchStatus=$('#searchStatus');
-const resultImage=$('#resultImage'), rankLabel=$('#rankLabel'), fileMeta=$('#fileMeta');
-const yesBtn=$('#yesBtn'), noBtn=$('#noBtn');
-const createPortraitBtn=$('#createPortraitBtn'), uploadPortrait=$('#uploadPortrait'), video=$('#video'), captureBtn=$('#captureBtn'), backBtn=$('#backBtn'), cameraStatus=$('#cameraStatus');
-const inferenceScreen=$('#inferenceScreen'), traceVisual=$('#traceVisual'), traceStatus=$('#traceStatus'), continueFromTraces=$('#continueFromTraces');
-const analysisBar=$('#analysisBar'), analysisPercent=$('#analysisPercent'), analysisStep=$('#analysisStep');
-const networkCanvas=$('#network'), portraitCanvas=$('#portrait'), maskCanvas=$('#mask');
-const nctx=networkCanvas.getContext('2d'), pctx=portraitCanvas.getContext('2d'), mctx=maskCanvas.getContext('2d');
-const artMessage=$('#artMessage'), removePct=$('#removePct'), removeBar=$('#removeBar'), ending=$('#ending'), restartBtn=$('#restartBtn');
-
-let results=[], current=0, attempts=0, selectedSource=null, stream=null;
-let W=0,H=0,dpr=1,erasing=false,last=null,progress=0,started=false;
-
-const nodes=[
-  {label:'ATTENTION',sub:'regolare il ritmo mentale'},
-  {label:'SEARCH',sub:'aprire percorsi di conoscenza'},
-  {label:'VERIFICATION',sub:'confrontare prima di credere'},
-  {label:'LEARNING',sub:'muoversi tra fonti diverse'},
-  {label:'MEMORY',sub:'depositare tracce esterne'},
-  {label:'CREATION',sub:'trasformare ricerca in forma'},
-  {label:'PAUSE',sub:'decomprimere e ripartire'},
-  {label:'CURIOSITY',sub:'seguire deviazioni utili'}
+(()=>{'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const screens=$$('.screen'),bar=$('#bar'),actEl=$('#act'),statusEl=$('#status'),traceCount=$('#traceCount');
+const acts=[['ACT I','BEFORE YOU'],['ACT I','MISREPRESENTATION'],['ACT I','SEARCH FAILURE'],['ACT II','INHABITING'],['ACT II','DECLARED TRACES'],['ACT III','ENTANGLEMENT'],['ACT III','CURRENT POSITION'],['ACT IV','POSITION'],['ACT IV','THIS IS ALSO ME']];
+let currentScreen=0,results=[],resultIndex=0,rejected=0,uploadedImage=null,startedAt=Date.now();
+const publicNodes=[],declaredNodes=[],capabilityNodes=[];
+const authorNodes=[
+ {label:'ATTENTION',type:'AUTHOR',source:'Author media diary: regulating cognitive rhythm'},
+ {label:'MEMORY',type:'AUTHOR',source:'Author media diary: externalized memory'},
+ {label:'LEARNING',type:'AUTHOR',source:'Author media diary: transmedia study'},
+ {label:'SEARCH',type:'AUTHOR',source:'Author media diary: critical information filtering'},
+ {label:'CREATION',type:'AUTHOR',source:'Author media diary: technical-aesthetic experimentation'},
+ {label:'PAUSE',type:'AUTHOR',source:'Author media diary: decompression and reactivation'},
+ {label:'CURIOSITY',type:'AUTHOR',source:'Author media diary: exploratory use'},
+ {label:'AI COLLABORATION',type:'AUTHOR',source:'Author media diary: capabilities extended through generative AI'}
 ];
+function show(n){currentScreen=n;screens.forEach((s,i)=>s.classList.toggle('active',i===n));actEl.textContent=acts[n][0];statusEl.textContent=acts[n][1];bar.style.width=(n/(screens.length-1)*100)+'%';if(n===5)initScratch();if(n===6)initMap();if(n===8){const sec=Math.max(1,Math.round((Date.now()-startedAt)/1000));$('#sessionTime').textContent=`THIS PLACE EXISTED FOR ${Math.floor(sec/60).toString().padStart(2,'0')}:${(sec%60).toString().padStart(2,'0')}.`}}
+function updateTraceCount(){traceCount.textContent='TRACES '+String(publicNodes.length+declaredNodes.length+capabilityNodes.length).padStart(2,'0')}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
-function showScreen(el){
-  screens.forEach(s=>s.classList.add('hidden'));
-  art.classList.add('hidden');
-  if(el) el.classList.remove('hidden');
-}
-function setState(s){stateLabel.textContent=s}
-function formatBytes(bytes){
-  if(!bytes) return 'dimensione non disponibile';
-  const u=['B','KB','MB','GB']; let i=0,n=bytes;
-  while(n>=1024&&i<u.length-1){n/=1024;i++}
-  return `${n.toFixed(i?1:0)} ${u[i]}`;
-}
+const ambient=$('#ambient'),actx=ambient.getContext('2d');let aw=0,ah=0,adpr=1,bg=[];
+function resizeAmbient(){const r=ambient.getBoundingClientRect();aw=r.width;ah=r.height;adpr=Math.max(1,devicePixelRatio||1);ambient.width=aw*adpr;ambient.height=ah*adpr;actx.setTransform(adpr,0,0,adpr,0,0);bg=Array.from({length:52},()=>({x:Math.random()*aw,y:Math.random()*ah,vx:(Math.random()-.5)*.08,vy:(Math.random()-.5)*.08,r:1+Math.random()*1.2,p:Math.random()*6}))}
+function drawAmbient(t){actx.clearRect(0,0,aw,ah);bg.forEach((a,i)=>{a.x+=a.vx;a.y+=a.vy;if(a.x<0||a.x>aw)a.vx*=-1;if(a.y<0||a.y>ah)a.vy*=-1;for(let j=i+1;j<bg.length;j++){const b=bg[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<84){actx.strokeStyle=`rgba(80,238,238,${(1-d/84)*.08})`;actx.lineWidth=.6;actx.beginPath();actx.moveTo(a.x,a.y);actx.lineTo(b.x,b.y);actx.stroke()}}const pulse=.55+.45*Math.sin(t*.0015+a.p);actx.fillStyle=`rgba(80,238,238,${.18+.22*pulse})`;actx.beginPath();actx.arc(a.x,a.y,a.r+pulse*.3,0,Math.PI*2);actx.fill()});requestAnimationFrame(drawAmbient)}
+addEventListener('resize',resizeAmbient);resizeAmbient();requestAnimationFrame(drawAmbient);
 
-searchForm.addEventListener('submit',async e=>{
-  e.preventDefault();
-  const q=queryInput.value.trim();
-  if(!q){searchStatus.textContent='Scrivi un nome da cercare.';return}
-  searchStatus.textContent='Interrogazione dell’archivio…';
-  setState('searching');
-  try{
-    results=await searchCommons(q);
-    if(!results.length){showScreen($('#failScreen'));setState('failure');return}
-    current=0;attempts=0;renderCurrent();showScreen($('#resultScreen'));setState('recognition');
-  }catch(err){
-    searchStatus.textContent='La ricerca non è disponibile in questo momento.';
-    setState('search');
-  }
-});
+async function searchCommons(query){const endpoint='https://commons.wikimedia.org/w/api.php';const params=new URLSearchParams({action:'query',generator:'search',gsrsearch:query,gsrnamespace:'6',gsrlimit:'18',prop:'imageinfo',iiprop:'url|size|mime',iiurlwidth:'1200',format:'json',origin:'*'});const r=await fetch(`${endpoint}?${params}`);if(!r.ok)throw new Error('network');const data=await r.json();return Object.values(data.query?.pages||{}).map(p=>{const ii=p.imageinfo?.[0];return{title:(p.title||'').replace(/^File:/,''),display:ii?.thumburl||ii?.url,width:ii?.width||0,height:ii?.height||0,mime:ii?.mime||''}}).filter(x=>x.display).slice(0,12)}
+$('#startBtn').onclick=async()=>{const q=$('#nameInput').value.trim();if(!q){$('#searchStatus').textContent='Type a name first.';return}$('#searchStatus').textContent='Searching public image traces…';try{results=await searchCommons(q);if(!results.length){publicNodes.push({label:'NO PUBLIC IMAGE',type:'PUBLIC',source:'No Wikimedia Commons result'});updateTraceCount();show(2);return}resultIndex=0;renderResult();show(1)}catch(e){$('#searchStatus').textContent='Public search temporarily unavailable.'}};
+$('#nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('#startBtn').click()});
+function renderResult(){const item=results[resultIndex];$('#resultImage').src=item.display;$('#resultTitle').textContent=item.title||'PUBLIC RESULT';$('#resultMeta').innerHTML=`PUBLIC IMAGE TRACE<br>${item.width} × ${item.height}<br>${esc(item.mime||'unknown')}`;$('#resultNo').textContent='0'+Math.min(resultIndex+1,3)}
+$('#noBtn').onclick=()=>{const item=results[resultIndex];rejected++;publicNodes.push({label:'REJECTED IMAGE '+rejected,type:'PUBLIC',source:item?.title||'Public image result',status:'REJECTED'});updateTraceCount();resultIndex++;if(rejected>=3||resultIndex>=results.length){$('#rejCount').textContent=String(rejected).padStart(2,'0');$('#rejectedPills').innerHTML=publicNodes.filter(n=>n.status==='REJECTED').map(n=>`<span class="trace-pill"><span class="dot"></span>${esc(n.label)}</span>`).join('');show(2)}else renderResult()};
+$('#yesBtn').onclick=()=>{const item=results[resultIndex];publicNodes.push({label:'ACCEPTED PUBLIC IMAGE',type:'PUBLIC',source:item?.title||'Public image result',status:'ACCEPTED'});updateTraceCount();$('#rejCount').textContent=String(rejected).padStart(2,'0');$('#rejectedPills').innerHTML='<span class="trace-pill"><span class="dot"></span>PUBLIC IMAGE ACCEPTED</span>';show(2)};
+$('#toPhoto').onclick=()=>show(3);
+$('#photoInput').onchange=e=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{uploadedImage=ev.target.result;$('#photoImg').src=uploadedImage;$('#photoPreview').style.display='block';$('#photoNext').disabled=false};reader.readAsDataURL(file)};$('#photoNext').onclick=()=>show(4);
 
-async function searchCommons(query){
-  const endpoint='https://commons.wikimedia.org/w/api.php';
-  const params=new URLSearchParams({
-    action:'query',
-    generator:'search',
-    gsrsearch:query,
-    gsrnamespace:'6',
-    gsrlimit:'18',
-    prop:'imageinfo',
-    iiprop:'url|size|mime',
-    iiurlwidth:'1200',
-    format:'json',
-    origin:'*'
-  });
-  const r=await fetch(`${endpoint}?${params}`);
-  if(!r.ok) throw new Error('network');
-  const data=await r.json();
-  return Object.values(data.query?.pages||{})
-    .map(p=>{
-      const ii=p.imageinfo?.[0];
-      return {
-        title:(p.title||'').replace(/^File:/,''),
-        display:ii?.thumburl||ii?.url,
-        original:ii?.url,
-        width:ii?.width||0,
-        height:ii?.height||0,
-        bytes:ii?.size||0,
-        mime:ii?.mime||''
-      }
-    })
-    .filter(x=>x.display)
-    .slice(0,12);
-}
+const questions=[
+ {q:'Where do you go when you do not know something?',opts:['SEARCH ENGINE','VIDEO PLATFORM','AI ASSISTANT','ANOTHER PERSON'],labels:['SEARCH','VIDEO LEARNING','AI ASSISTANCE','RELATIONAL KNOWLEDGE'],cap:[false,false,true,false]},
+ {q:'Where does your memory live?',opts:['PHONE GALLERY','CLOUD','SOCIAL MEDIA','MAINLY OFFLINE'],labels:['IMAGES','CLOUD MEMORY','SOCIAL ARCHIVE','OFFLINE MEMORY'],cap:[true,true,true,false]},
+ {q:'What technology lets you do something you otherwise could not do?',opts:['TRANSLATOR','MAPS / NAVIGATION','AI ASSISTANT','ACCESSIBILITY TOOL'],labels:['TRANSLATION','ORIENTATION','AI COLLABORATION','ACCESS'],cap:[true,true,true,true]},
+ {q:'What do you open when you need a pause?',opts:['SHORT VIDEOS','MUSIC','NEWS / FEED','NOTHING'],labels:['DECOMPRESSION','MUSIC','INFORMATION FEED','DISCONNECTION'],cap:[false,false,false,false]},
+ {q:'What do you refuse to make visible?',opts:['BODY','RELATIONSHIPS','LOCATION','THOUGHTS'],labels:['HIDDEN BODY','PRIVATE RELATIONS','HIDDEN LOCATION','PRIVATE THOUGHTS'],cap:[false,false,false,false]}
+];let qi=0;
+function renderQuestion(){const q=questions[qi];$('#qcount').textContent=`QUESTION ${qi+1} / ${questions.length}`;$('#question').textContent=q.q;$('#options').innerHTML=q.opts.map((o,i)=>`<button class="option" data-i="${i}">${o}</button>`).join('');$$('.option').forEach(b=>b.onclick=()=>selectAnswer(+b.dataset.i))}
+function selectAnswer(i){const q=questions[qi],label=q.labels[i],isCap=q.cap[i];const node={label,type:isCap?'CAPABILITY':'DECLARED',source:q.q,answer:q.opts[i]};declaredNodes.push(node);if(isCap)capabilityNodes.push({...node});updateTraceCount();$$('.option').forEach((b,j)=>b.classList.toggle('selected',j===i));$('#born').innerHTML='<div class="flash-node"></div>';setTimeout(()=>{qi++;$('#born').innerHTML='';if(qi<questions.length)renderQuestion();else show(5)},650)}renderQuestion();
 
-function renderCurrent(){
-  const item=results[current];
-  resultImage.src=item.display;
-  resultImage.alt=item.title;
-  rankLabel.textContent=`Result ${attempts+1} of 3`;
-  fileMeta.innerHTML=
-    `FILE: ${escapeHtml(item.title)}<br>`+
-    `SIZE: ${formatBytes(item.bytes)}<br>`+
-    `DIMENSIONS: ${item.width} × ${item.height}<br>`+
-    `MIME: ${item.mime||'unknown'}`;
-}
-function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function initScratch(){const c=$('#scratch'),ctx=c.getContext('2d'),r=c.getBoundingClientRect(),d=Math.max(1,devicePixelRatio||1);c.width=r.width*d;c.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);ctx.globalCompositeOperation='source-over';function finishBase(){ctx.fillStyle='rgba(0,0,0,.12)';ctx.fillRect(0,0,r.width,r.height);ctx.fillStyle='rgba(80,238,238,.9)';ctx.font='10px ui-monospace,monospace';ctx.fillText('REMOVE WHAT LOOKS LIKE YOU',16,r.height-18)}if(uploadedImage){const img=new Image();img.onload=()=>{const s=Math.max(r.width/img.width,r.height/img.height),iw=img.width*s,ih=img.height*s;ctx.filter='grayscale(1) contrast(1.18)';ctx.drawImage(img,(r.width-iw)/2,(r.height-ih)/2,iw,ih);ctx.filter='none';finishBase()};img.src=uploadedImage}else{const g=ctx.createLinearGradient(0,0,r.width,r.height);g.addColorStop(0,'#ddd');g.addColorStop(1,'#222');ctx.fillStyle=g;ctx.fillRect(0,0,r.width,r.height);finishBase()}let drawing=false;function erase(e){if(!drawing)return;const p=e.touches?e.touches[0]:e,cr=c.getBoundingClientRect(),x=p.clientX-cr.left,y=p.clientY-cr.top;ctx.globalCompositeOperation='destination-out';ctx.beginPath();ctx.arc(x,y,30,0,Math.PI*2);ctx.fill()}c.onpointerdown=e=>{drawing=true;erase(e)};c.onpointermove=erase;c.onpointerup=()=>drawing=false;c.onpointerleave=()=>drawing=false;c.ontouchstart=e=>{drawing=true;erase(e);e.preventDefault()};c.ontouchmove=e=>{erase(e);e.preventDefault()};c.ontouchend=()=>drawing=false}
+$('#toMap').onclick=()=>show(6);
 
-noBtn.addEventListener('click',()=>{
-  attempts++;
-  if(attempts>=3 || current>=results.length-1){
-    showScreen($('#failScreen'));setState('failure');return
-  }
-  current++;
-  resultImage.animate([{opacity:0,transform:'scale(.985)'},{opacity:1,transform:'scale(1)'}],{duration:450,easing:'ease-out'});
-  renderCurrent();
-});
-yesBtn.addEventListener('click',()=>loadSelected(results[current].display));
-
-createPortraitBtn.addEventListener('click',openCamera);
-backBtn.addEventListener('click',()=>{stopCamera();showScreen($('#failScreen'));setState('failure')});
-
-async function openCamera(){
-  showScreen($('#webcamScreen'));setState('webcam');cameraStatus.textContent='Richiesta accesso alla fotocamera…';
-  try{
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1600},height:{ideal:1200}},audio:false});
-    video.srcObject=stream;cameraStatus.textContent='';
-  }catch(e){
-    cameraStatus.textContent='Fotocamera non disponibile o permesso negato.';
-  }
-}
-function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
-captureBtn.addEventListener('click',()=>{
-  if(!video.videoWidth){cameraStatus.textContent='Attendi che la fotocamera sia pronta.';return}
-  const c=document.createElement('canvas');c.width=video.videoWidth;c.height=video.videoHeight;
-  const x=c.getContext('2d');x.translate(c.width,0);x.scale(-1,1);x.drawImage(video,0,0);
-  stopCamera();runSecondSearch(c);
-});
-
-function loadSelected(url){
-  const img=new Image();img.crossOrigin='anonymous';
-  img.onload=()=>runSecondSearch(img);
-  img.onerror=()=>{showScreen($('#failScreen'));setState('failure')};
-  img.src=url;
-}
-
-
-uploadPortrait.addEventListener('change',()=>{
-  const file=uploadPortrait.files?.[0];
-  if(!file) return;
-  const url=URL.createObjectURL(file);
-  const img=new Image();
-  img.onload=()=>{ URL.revokeObjectURL(url); runSecondSearch(img); };
-  img.src=url;
-});
-
-async function runSecondSearch(source){
-  selectedSource=source;
-  showScreen(inferenceScreen);
-  setState('inference');
-  traceVisual.innerHTML='';
-  traceStatus.textContent='querying public sources…';
-  continueFromTraces.classList.add('hidden');
-
-  const q=queryInput.value.trim() || 'anonymous subject';
-  const cards=[];
-
-  function addCard(label,value,delay=0){
-    return new Promise(resolve=>{
-      setTimeout(()=>{
-        const card=document.createElement('div');
-        card.className='trace-card';
-        card.innerHTML=`<div class="t">${escapeHtml(label)}</div><div class="v">${escapeHtml(value||'not found')}</div>`;
-        traceVisual.appendChild(card);
-        resolve();
-      },delay);
-    });
-  }
-
-  await addCard('NAME',q,100);
-  await addCard('IMAGE','selected portrait',120);
-
-  try{
-    const endpoint='https://en.wikipedia.org/w/api.php';
-    const params=new URLSearchParams({
-      action:'query',
-      generator:'search',
-      gsrsearch:q,
-      gsrlimit:'1',
-      prop:'extracts|pageimages|categories|links',
-      exintro:'1',
-      explaintext:'1',
-      exsentences:'3',
-      piprop:'thumbnail',
-      pithumbsize:'900',
-      cllimit:'20',
-      pllimit:'30',
-      format:'json',
-      origin:'*'
-    });
-    const response=await fetch(`${endpoint}?${params}`);
-    if(!response.ok) throw new Error('source unavailable');
-    const data=await response.json();
-    const page=Object.values(data.query?.pages||{})[0];
-
-    if(!page){
-      await addCard('PUBLIC SOURCE','no Wikipedia page found',100);
-      await addCard('BIOGRAPHY','not available',100);
-      await addCard('CATEGORIES','not available',100);
-      await addCard('LINKED TOPICS','not available',100);
-    }else{
-      const summary=(page.extract||'No summary available').trim();
-      const categories=(page.categories||[])
-        .map(c=>c.title.replace(/^Category:/,''))
-        .filter(c=>!/(Articles|Pages|CS1|Webarchive|Use dmy|Use mdy)/i.test(c))
-        .slice(0,6).join(' · ') || 'not available';
-      const links=(page.links||[])
-        .map(l=>l.title)
-        .filter(t=>!t.includes(':'))
-        .slice(0,8).join(' · ') || 'not available';
-
-      await addCard('PUBLIC SOURCE',page.title||q,100);
-      await addCard('BIOGRAPHY',summary,100);
-      await addCard('CATEGORIES',categories,100);
-      await addCard('LINKED TOPICS',links,100);
-    }
-  }catch(error){
-    await addCard('PUBLIC SOURCE','source unavailable',100);
-    await addCard('BIOGRAPHY','could not be retrieved',100);
-    await addCard('CATEGORIES','could not be retrieved',100);
-    await addCard('LINKED TOPICS','could not be retrieved',100);
-  }
-
-  await addCard('UNCERTAINTY','public data is partial and context-dependent',100);
-  await addCard('COGNITION','not directly observable from a portrait',100);
-  await addCard('STATUS','association is not identity',100);
-
-  traceStatus.textContent='public trace map assembled';
-  continueFromTraces.classList.remove('hidden');
-}
-
-continueFromTraces.addEventListener('click',()=>{
-  runAnalysis(selectedSource);
-});
-
-function runAnalysis(source){
-  selectedSource=source;
-  showScreen($('#analysis'));setState('analysis');
-  analysisBar.style.width='0%';analysisPercent.textContent='0%';analysisStep.textContent='face';
-  const labels=['face','public image','identity','cognition'];
-  let p=0;
-  const timer=setInterval(()=>{
-    p+=4+Math.random()*6;p=Math.min(100,p);
-    analysisBar.style.width=p+'%';analysisPercent.textContent=Math.floor(p)+'%';
-    analysisStep.textContent=labels[Math.min(labels.length-1,Math.floor(p/26))];
-    if(p>=100){clearInterval(timer);setTimeout(()=>startArt(source),450)}
-  },120);
-}
-
-function resizeCanvases(){
-  dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
-  [networkCanvas,portraitCanvas,maskCanvas].forEach(c=>{
-    c.width=Math.floor(W*dpr);c.height=Math.floor(H*dpr);c.style.width=W+'px';c.style.height=H+'px';
-    c.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
-  });
-}
-function drawCover(ctx,source){
-  const sw=source.videoWidth||source.naturalWidth||source.width;
-  const sh=source.videoHeight||source.naturalHeight||source.height;
-  const s=Math.max(W/sw,H/sh),dw=sw*s,dh=sh*s;
-  ctx.drawImage(source,(W-dw)/2,(H-dh)/2,dw,dh);
-}
-function startArt(source){
-  showScreen(null);art.classList.remove('hidden');setState('deconstruction');
-  resizeCanvases();drawNetwork();drawPortrait(source);resetMask();
-  artMessage.classList.remove('hide');
-  setTimeout(()=>artMessage.classList.add('hide'),2200);
-}
-function drawPortrait(source){
-  pctx.clearRect(0,0,W,H);drawCover(pctx,source);
-  const g=pctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,'rgba(0,0,0,.08)');g.addColorStop(1,'rgba(0,0,0,.28)');
-  pctx.fillStyle=g;pctx.fillRect(0,0,W,H);
-}
-function drawNetwork(){
-  nctx.clearRect(0,0,W,H);nctx.fillStyle='#050505';nctx.fillRect(0,0,W,H);
-  const cx=W/2,cy=H/2;
-  const positions=[];
-  const rx=Math.min(W*.34,390),ry=Math.min(H*.34,360);
-  nodes.forEach((node,i)=>{
-    const a=-Math.PI/2+i*(Math.PI*2/nodes.length);
-    positions.push({x:cx+Math.cos(a)*rx*(i%2?.82:1),y:cy+Math.sin(a)*ry,label:node.label,sub:node.sub});
-  });
-  nctx.strokeStyle='rgba(255,255,255,.12)';nctx.lineWidth=.7;
-  positions.forEach((p,i)=>{
-    [1,3].forEach(step=>{
-      const q=positions[(i+step)%positions.length];
-      nctx.beginPath();nctx.moveTo(p.x,p.y);nctx.lineTo(q.x,q.y);nctx.stroke();
-    })
-  });
-  positions.forEach((p,i)=>{
-    nctx.strokeStyle='rgba(255,255,255,.32)';nctx.lineWidth=1;
-    nctx.beginPath();nctx.arc(p.x,p.y,30,0,Math.PI*2);nctx.stroke();
-    nctx.textAlign='center';nctx.fillStyle='rgba(245,245,240,.96)';nctx.font='500 12px system-ui';
-    nctx.fillText(p.label,p.x,p.y-1);
-    nctx.fillStyle='rgba(165,165,158,.78)';nctx.font='11px system-ui';
-    wrap(nctx,p.sub,p.x,p.y+18,W<700?130:190,15);
-  });
-  nctx.fillStyle='rgba(255,255,255,.96)';nctx.font=`500 ${Math.max(18,Math.min(28,W*.025))}px system-ui`;
-  nctx.textAlign='center';nctx.fillText('THIS IS ALSO ME',cx,cy+5);
-}
-function wrap(ctx,text,x,y,maxWidth,lineHeight){
-  const words=text.split(' ');let line='';
-  for(let i=0;i<words.length;i++){
-    const test=line+words[i]+' ';
-    if(ctx.measureText(test).width>maxWidth&&i){ctx.fillText(line,x,y);line=words[i]+' ';y+=lineHeight}else line=test;
-  }
-  ctx.fillText(line,x,y);
-}
-function resetMask(){
-  mctx.clearRect(0,0,W,H);mctx.fillStyle='#000';mctx.fillRect(0,0,W,H);
-  mctx.globalCompositeOperation='destination-out';
-  progress=0;removePct.textContent='0%';removeBar.style.width='0%';ending.classList.remove('show');started=false;last=null;
-}
-function erase(x,y,pressure=.55){
-  const radius=Math.max(34,Math.min(W,H)*(.05+pressure*.022));
-  mctx.save();mctx.globalCompositeOperation='destination-out';
-  const g=mctx.createRadialGradient(x,y,0,x,y,radius);
-  g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.68,'rgba(0,0,0,.84)');g.addColorStop(1,'rgba(0,0,0,0)');
-  mctx.fillStyle=g;mctx.beginPath();mctx.arc(x,y,radius,0,Math.PI*2);mctx.fill();
-  if(last){mctx.lineCap='round';mctx.lineWidth=radius*1.45;mctx.strokeStyle='rgba(0,0,0,.95)';
-    mctx.beginPath();mctx.moveTo(last.x,last.y);mctx.lineTo(x,y);mctx.stroke()}
-  mctx.restore();last={x,y};
-  progress=Math.min(1,progress+(Math.PI*radius*radius)/(W*H)*.16);
-  const pct=Math.round(progress*100);removePct.textContent=pct+'%';removeBar.style.width=pct+'%';
-  if(progress>.72) ending.classList.add('show');
-}
-function point(e){return{x:e.clientX,y:e.clientY,p:e.pressure||.55}}
-maskCanvas.addEventListener('pointerdown',e=>{erasing=true;maskCanvas.setPointerCapture?.(e.pointerId);const q=point(e);erase(q.x,q.y,q.p)});
-maskCanvas.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||erasing||e.pressure>0){const q=point(e);erase(q.x,q.y,q.p)}});
-maskCanvas.addEventListener('pointerup',()=>{erasing=false;last=null});
-maskCanvas.addEventListener('pointerleave',()=>{if(!erasing)last=null});
-
-restartBtn.addEventListener('click',()=>{
-  ending.classList.remove('show');results=[];current=0;attempts=0;selectedSource=null;
-  queryInput.value='';searchStatus.textContent='';showScreen($('#searchScreen'));setState('search')
-});
-window.addEventListener('resize',()=>{
-  if(!art.classList.contains('hidden')&&selectedSource){
-    resizeCanvases();drawNetwork();drawPortrait(selectedSource);resetMask();
-  }
-});
+function initMap(){const c=$('#mapCanvas'),ctx=c.getContext('2d'),r=c.getBoundingClientRect(),d=Math.max(1,devicePixelRatio||1);c.width=r.width*d;c.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);const cx=r.width/2,cy=r.height/2;const all=[...declaredNodes,...authorNodes,...publicNodes];const nodes=[{label:'CURRENT POSITION',type:'CENTER',source:'Temporary relation between visitor, author and system',x:cx,y:cy,r:5,p:0}];all.forEach((n,i)=>{const a=Math.PI*2*i/Math.max(1,all.length)+(n.type==='AUTHOR'?.22:0);const rad=n.type==='PUBLIC'?180:n.type==='AUTHOR'?138:n.type==='CAPABILITY'?105:92;nodes.push({...n,x:cx+Math.cos(a)*rad,y:cy+Math.sin(a)*rad,r:n.type==='CAPABILITY'?4:n.type==='DECLARED'?3.6:n.type==='AUTHOR'?3.2:2.8,p:Math.random()*6})});const edges=[];for(let i=1;i<nodes.length;i++)edges.push([0,i]);let relations=0;function relation(a,b){const A=a.label.split(' ')[0],B=b.label.split(' ')[0];const map={SEARCH:['LEARNING','CURIOSITY'],IMAGES:['MEMORY'],TRANSLATION:['LEARNING'],ORIENTATION:['SEARCH'],AI:['CREATION','AI'],MUSIC:['CREATION'],DECOMPRESSION:['PAUSE'],ACCESS:['LEARNING']};return A===B||(map[A]||[]).includes(B)}declaredNodes.forEach((dn,di)=>authorNodes.forEach((an,ai)=>{if(relation(dn,an)){edges.push([1+di,1+declaredNodes.length+ai]);relations++}}));$('#sumRelations').textContent=String(relations).padStart(2,'0');let t=0;function draw(){t+=.02;ctx.clearRect(0,0,r.width,r.height);edges.forEach(([ai,bi])=>{const a=nodes[ai],b=nodes[bi];ctx.strokeStyle='rgba(80,238,238,.16)';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()});nodes.forEach((n,i)=>{const pulse=.6+.4*Math.sin(t+(n.p||0));if(n.type==='AUTHOR'){ctx.strokeStyle='rgba(80,238,238,.9)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.x,n.y,n.r+3+pulse,0,Math.PI*2);ctx.stroke()}else if(n.type==='PUBLIC'){ctx.strokeStyle='rgba(185,199,200,.8)';ctx.beginPath();ctx.moveTo(n.x-3,n.y-3);ctx.lineTo(n.x+3,n.y+3);ctx.moveTo(n.x+3,n.y-3);ctx.lineTo(n.x-3,n.y+3);ctx.stroke()}else if(n.type==='CAPABILITY'){ctx.strokeStyle='rgba(80,238,238,.9)';ctx.save();ctx.translate(n.x,n.y);ctx.rotate(Math.PI/4);ctx.strokeRect(-4,-4,8,8);ctx.restore()}else{ctx.fillStyle=n.type==='CENTER'?'#fff':'rgba(80,238,238,.9)';ctx.beginPath();ctx.arc(n.x,n.y,n.r+pulse*.7,0,Math.PI*2);ctx.fill()}if(i===0){ctx.fillStyle='rgba(242,247,247,.85)';ctx.font='9px ui-monospace,monospace';ctx.fillText(n.label,n.x-43,n.y-14)}});requestAnimationFrame(draw)}draw();c.onclick=e=>{const cr=c.getBoundingClientRect(),x=e.clientX-cr.left,y=e.clientY-cr.top;let best=null,dist=24;nodes.forEach(n=>{const dd=Math.hypot(n.x-x,n.y-y);if(dd<dist){dist=dd;best=n}});if(best)$('#nodeInfo').innerHTML=`<b>${esc(best.label)}</b>TYPE: ${esc(best.type)}<br>SOURCE: ${esc(best.source||'not available')}${best.answer?'<br>DECLARED VALUE: '+esc(best.answer):''}`}}
+$('#toSummary').onclick=()=>{$('#sumPublic').textContent=String(publicNodes.length).padStart(2,'0');$('#sumDeclared').textContent=String(declaredNodes.length).padStart(2,'0');$('#sumCapabilities').textContent=String(capabilityNodes.length).padStart(2,'0');$('#sumRejected').textContent=String(rejected).padStart(2,'0');show(7)};$('#toFinal').onclick=()=>show(8);$('#restart').onclick=()=>location.reload();$('#resetBtn').onclick=()=>location.reload();
 })();
 </script>
 </body>
