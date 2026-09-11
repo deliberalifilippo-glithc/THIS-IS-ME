@@ -3,6 +3,19 @@ const host=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){retu
 const uniq=rows=>{const seen=new Set();return rows.filter(x=>{const k=x.image||x.thumbnail||'';if(!k||seen.has(k))return false;seen.add(k);return true})};
 const UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36';
 
+async function braveImages(q,key){
+  const p=new URLSearchParams({q:`"${q}"`,count:'12',country:'IT',search_lang:'it',safesearch:'strict'});
+  const r=await fetch('https://api.search.brave.com/res/v1/images/search?'+p,{headers:{Accept:'application/json','Accept-Encoding':'gzip','X-Subscription-Token':key}});
+  if(!r.ok)throw new Error('brave images unavailable');
+  const d=await r.json();
+  return uniq((d.results||[]).map(x=>{
+    const page=x.url||x.page_url||x.source_url||'';
+    const thumb=typeof x.thumbnail==='string'?x.thumbnail:(x.thumbnail?.src||x.properties?.placeholder||'');
+    const image=x.properties?.url||x.image_url||x.original||thumb||page;
+    return{title:clean(x.title||x.description||host(page)),image,thumbnail:thumb||image,page,source:clean(x.source||x.publisher||host(page))};
+  })).slice(0,12)
+}
+
 async function bingPages(q){
   const u='https://www.bing.com/search?'+new URLSearchParams({q:`"${q}"`,cc:'it',setlang:'it',count:'10'});
   const r=await fetch(u,{headers:{'User-Agent':UA,'Accept-Language':'it-IT,it;q=0.9,en;q=0.7'}});if(!r.ok)return[];
@@ -57,20 +70,25 @@ export default async function handler(req,res){
   const q=String(req.query?.q||'').trim();if(!q)return res.status(400).json({error:'missing query'});
 
   try{
+    const braveKey=process.env.BRAVE_SEARCH_API_KEY||process.env.BRAVE_API_KEY;
+    if(braveKey){const rows=await braveImages(q,braveKey);if(rows.length){res.setHeader('Cache-Control','s-maxage=300, stale-while-revalidate=600');return res.status(200).json({provider:'brave-images',results:rows})}}
+  }catch(e){}
+
+  try{
     const key=process.env.SERPAPI_API_KEY||process.env.SERPAPI_KEY;
     if(key){
       const p=new URLSearchParams({engine:'google_images',q:`"${q}"`,api_key:key,hl:'it',gl:'it',safe:'active',ijn:'0'}),r=await fetch('https://serpapi.com/search.json?'+p);
-      if(r.ok){const d=await r.json(),rows=uniq((d.images_results||[]).slice(0,16).map(x=>({title:clean(x.title),image:x.original||x.thumbnail||'',thumbnail:x.thumbnail||x.original||'',page:x.link||x.source||'',source:clean(x.source||'')})));if(rows.length){res.setHeader('Cache-Control','s-maxage=300, stale-while-revalidate=600');return res.status(200).json({provider:'google-images',results:rows.slice(0,12)})}}
+      if(r.ok){const d=await r.json(),rows=uniq((d.images_results||[]).slice(0,16).map(x=>({title:clean(x.title),image:x.original||x.thumbnail||'',thumbnail:x.thumbnail||x.original||'',page:x.link||x.source||'',source:clean(x.source||'')})));if(rows.length){res.setHeader('Cache-Control','s-maxage=300, stale-while-revalidate=600');return res.status(200).json({provider:'serpapi-google-images',results:rows.slice(0,12)})}}
     }
   }catch(e){}
 
   try{
-    const rows=await pageImageSearch(q);if(rows.length){res.setHeader('Cache-Control','s-maxage=120, stale-while-revalidate=300');return res.status(200).json({provider:'public-web-pages',results:rows.slice(0,10)})}
+    const rows=await pageImageSearch(q);if(rows.length){res.setHeader('Cache-Control','s-maxage=120, stale-while-revalidate=300');return res.status(200).json({provider:'public-web-pages-fallback',results:rows.slice(0,10)})}
   }catch(e){}
 
   try{
     const endpoint='https://commons.wikimedia.org/w/api.php',p=new URLSearchParams({action:'query',generator:'search',gsrsearch:`"${q}"`,gsrnamespace:'6',gsrlimit:'18',prop:'imageinfo',iiprop:'url|mime',iiurlwidth:'900',format:'json',origin:'*'}),r=await fetch(endpoint+'?'+p);
-    if(r.ok){const d=await r.json(),rows=uniq(Object.values(d.query?.pages||{}).map(pg=>{const ii=pg.imageinfo?.[0]||{};return{title:clean((pg.title||'').replace(/^File:/,'')),image:ii.thumburl||ii.url||'',thumbnail:ii.thumburl||ii.url||'',page:`https://commons.wikimedia.org/wiki/${encodeURIComponent(pg.title||'')}`,source:'Wikimedia Commons'}}));res.setHeader('Cache-Control','s-maxage=300, stale-while-revalidate=600');return res.status(200).json({provider:'wikimedia-commons',results:rows.slice(0,12)})}
+    if(r.ok){const d=await r.json(),rows=uniq(Object.values(d.query?.pages||{}).map(pg=>{const ii=pg.imageinfo?.[0]||{};return{title:clean((pg.title||'').replace(/^File:/,'')),image:ii.thumburl||ii.url||'',thumbnail:ii.thumburl||ii.url||'',page:`https://commons.wikimedia.org/wiki/${encodeURIComponent(pg.title||'')}`,source:'Wikimedia Commons'}}));res.setHeader('Cache-Control','s-maxage=300, stale-while-revalidate=600');return res.status(200).json({provider:'wikimedia-commons-fallback',results:rows.slice(0,12)})}
   }catch(e){}
 
   return res.status(200).json({provider:'none',results:[]});
