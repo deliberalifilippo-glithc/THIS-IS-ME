@@ -2,6 +2,14 @@ function text(s=''){return String(s).replace(/<script[\s\S]*?<\/script>/gi,' ').
 function host(link=''){try{return new URL(link).hostname.replace(/^www\./,'')}catch(e){return''}}
 function unique(rows){const seen=new Set();return rows.filter(x=>x.link&&/^https?:\/\//i.test(x.link)&&!seen.has(x.link)&&(seen.add(x.link),true))}
 
+async function brave(q,key){
+  const p=new URLSearchParams({q:`"${q}"`,count:'12',country:'IT',search_lang:'it',safesearch:'moderate'});
+  const r=await fetch('https://api.search.brave.com/res/v1/web/search?'+p,{headers:{Accept:'application/json','Accept-Encoding':'gzip','X-Subscription-Token':key}});
+  if(!r.ok)throw new Error('brave unavailable');
+  const d=await r.json();
+  return unique((d.web?.results||[]).map(x=>({title:text(x.title||''),link:x.url||'',snippet:text(x.description||x.snippet||''),displayed_link:host(x.url||'')}))).slice(0,12)
+}
+
 async function bingHtml(query){
   const u='https://www.bing.com/search?'+new URLSearchParams({q:query,cc:'it',setlang:'it',count:'12'});
   const r=await fetch(u,{headers:{'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36','Accept-Language':'it-IT,it;q=0.9,en;q=0.7'}});
@@ -23,11 +31,13 @@ async function googleHtml(query){
 async function serp(q,key){const p=new URLSearchParams({engine:'google',q:`"${q}"`,api_key:key,num:'12',hl:'it',gl:'it',safe:'active'}),r=await fetch('https://serpapi.com/search.json?'+p);if(!r.ok)throw new Error('serpapi unavailable');const d=await r.json();return(d.organic_results||[]).map(x=>({title:x.title||'',link:x.link||'',snippet:x.snippet||'',displayed_link:x.displayed_link||host(x.link||'')})).slice(0,12)}
 
 async function realSearch(q){
-  const key=process.env.SERPAPI_API_KEY||process.env.SERPAPI_KEY;
-  if(key){try{const rows=await serp(q,key);if(rows.length)return{provider:'serpapi-google',rows}}catch(e){}}
+  const braveKey=process.env.BRAVE_SEARCH_API_KEY||process.env.BRAVE_API_KEY;
+  if(braveKey){try{const rows=await brave(q,braveKey);if(rows.length)return{provider:'brave-search',rows}}catch(e){}}
+  const serpKey=process.env.SERPAPI_API_KEY||process.env.SERPAPI_KEY;
+  if(serpKey){try{const rows=await serp(q,serpKey);if(rows.length)return{provider:'serpapi-google',rows}}catch(e){}}
   const queries=[`"${q}"`,q];
-  for(const query of queries){try{const rows=await bingHtml(query);if(rows.length>=2)return{provider:'bing-web',rows}}catch(e){}}
-  for(const query of queries){try{const rows=await googleHtml(query);if(rows.length>=2)return{provider:'google-web',rows}}catch(e){}}
+  for(const query of queries){try{const rows=await bingHtml(query);if(rows.length>=2)return{provider:'bing-web-fallback',rows}}catch(e){}}
+  for(const query of queries){try{const rows=await googleHtml(query);if(rows.length>=2)return{provider:'google-web-fallback',rows}}catch(e){}}
   return{provider:'none',rows:[]}
 }
 
