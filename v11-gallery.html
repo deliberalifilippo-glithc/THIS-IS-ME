@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020303">
+<title>THIS IS ME? — v11.1</title>
+<style>html,body{margin:0;width:100%;height:100%;background:#020303;overflow:hidden}#boot{position:fixed;inset:0;display:grid;place-items:center;color:#b7c5c7;font:11px ui-monospace,monospace;letter-spacing:.16em}</style>
+</head>
+<body>
+<div id="boot">RESTORING PUBLIC IMAGE TRACES</div>
+<script>
+(async()=>{
+  try{
+    let src=await fetch('/v11.html?rev=11.1',{cache:'no-store'}).then(r=>r.text());
+    const patch=`<script>
+(()=>{
+  const hostFrame=document.getElementById('frame');
+  if(!hostFrame)return;
+  const install=()=>{
+    const d=hostFrame.contentDocument;
+    if(!d||!d.querySelector)return;
+    const screen=d.querySelector('[data-screen="2"]'),btn=d.getElementById('toPhoto');
+    if(!screen||!btn||d.getElementById('publicImageTraces'))return;
+    const style=d.createElement('style');
+    style.textContent=`
+      #publicImageTraces{margin-top:13px;border-top:1px solid rgba(103,237,237,.16);padding-top:10px}
+      #publicImageTraces .pvHead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px;font:7px ui-monospace,monospace;letter-spacing:.14em;color:#67eded;text-transform:uppercase}
+      #publicImageTraces .pvStatus{color:#718487;letter-spacing:.06em;white-space:nowrap}
+      #publicImageGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+      .pvItem{position:relative;aspect-ratio:1/1.12;overflow:hidden;border:1px solid rgba(103,237,237,.16);background:#050707;opacity:0;transform:translateY(5px);animation:pvIn .32s forwards}
+      .pvItem img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.12) brightness(.82)}
+      .pvItem .pvMeta{position:absolute;left:0;right:0;bottom:0;padding:5px 6px;background:linear-gradient(transparent,rgba(0,0,0,.94));font:6px/1.25 ui-monospace,monospace;color:#c3cecf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .pvItem .pvSource{display:block;color:#67eded;margin-top:2px;text-transform:uppercase}
+      .pvEmpty{grid-column:1/-1;border:1px solid rgba(103,237,237,.12);padding:11px;font:8px/1.45 ui-monospace,monospace;color:#8ca0a2}
+      @keyframes pvIn{to{opacity:1;transform:none}}
+    `;
+    d.head.appendChild(style);
+    const box=d.createElement('div');
+    box.id='publicImageTraces';
+    box.innerHTML='<div class="pvHead"><span>IMMAGINI PUBBLICHE ASSOCIATE AL NOME</span><span class="pvStatus" id="pvStatus">IN ATTESA</span></div><div id="publicImageGrid"></div>';
+    screen.insertBefore(box,btn);
+    btn.textContent='CONTINUA AL SELFIE';
+
+    let last='';
+    const load=async()=>{
+      const name=(d.getElementById('nameInput')?.value||'').trim();
+      if(!name||name===last)return;
+      last=name;
+      const grid=d.getElementById('publicImageGrid'),status=d.getElementById('pvStatus');
+      if(!grid||!status)return;
+      grid.innerHTML='';status.textContent='RICERCA LIVE...';
+      try{
+        const r=await fetch('/api/images?q='+encodeURIComponent(name),{cache:'no-store'});
+        const data=await r.json();
+        const rows=(data.results||[]).slice(0,8);
+        status.textContent=String(rows.length).padStart(2,'0')+' TROVATE';
+        if(!rows.length){grid.innerHTML='<div class="pvEmpty">Nessuna immagine pubblica pertinente trovata per questo nome.</div>';return;}
+        rows.forEach((x,i)=>{
+          const item=d.createElement('div');item.className='pvItem';item.style.animationDelay=(i*70)+'ms';
+          const img=d.createElement('img');img.loading='lazy';img.referrerPolicy='no-referrer';img.alt='';img.src=x.thumbnail||x.image||'';
+          const meta=d.createElement('div');meta.className='pvMeta';meta.textContent=(x.title||'TRACCIA VISIVA').slice(0,44);
+          const src=d.createElement('span');src.className='pvSource';src.textContent=(x.source||data.provider||'WEB').slice(0,32);meta.appendChild(src);
+          item.appendChild(img);item.appendChild(meta);grid.appendChild(item);
+        });
+      }catch(e){status.textContent='NON DISPONIBILE';grid.innerHTML='<div class="pvEmpty">Ricerca immagini temporaneamente non disponibile.</div>'}
+    };
+    const mo=new MutationObserver(()=>{if(screen.classList.contains('active'))load()});
+    mo.observe(screen,{attributes:true,attributeFilter:['class']});
+    if(screen.classList.contains('active'))load();
+  };
+  hostFrame.addEventListener('load',()=>setTimeout(install,80));
+  setTimeout(install,700);
+})();
+<\/script>`;
+    src=src.replace('</body>',patch+'</body>');
+    document.open();document.write(src);document.close();
+  }catch(e){document.getElementById('boot').textContent='ENGINE LOAD ERROR'}
+})();
+</script>
+</body>
+</html>
