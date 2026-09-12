@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020303">
+<title>THIS IS ME? — v11</title>
+<style>
+html,body{margin:0;width:100%;height:100%;background:#020303;overflow:hidden}#frame{position:fixed;inset:0;width:100%;height:100%;border:0;background:#020303}#boot{position:fixed;inset:0;display:grid;place-items:center;background:#020303;color:#b7c5c7;font:11px ui-monospace,monospace;letter-spacing:.18em}#boot:after{content:"";width:180px;height:1px;background:linear-gradient(90deg,transparent,#68f0f0,transparent);box-shadow:0 0 14px rgba(104,240,240,.55);animation:scan 1.2s linear infinite;position:absolute;top:54%}@keyframes scan{from{transform:translateX(-180px)}to{transform:translateX(180px)}}
+</style>
+</head>
+<body>
+<div id="boot">INITIALIZING REPRESENTATION ENGINE</div>
+<iframe id="frame" allow="camera *; microphone 'none'" title="THIS IS ME?"></iframe>
+<script>
+(async()=>{
+  const frame=document.getElementById('frame'),boot=document.getElementById('boot');
+  try{
+    let html=await fetch('/index.html?base=v10.6',{cache:'no-store'}).then(r=>r.text());
+    html=html.replaceAll('v10.6','v11.0');
+    html=html.replace('Motore di rappresentazione v11.0','Representation Engine v11.0');
+    html=html.replace('Posizionalità postdigitale','POSTDIGITAL POSITIONALITY');
+    html=html.replace('Sei già rappresentato.','THIS IS ME?');
+    html=html.replace('placeholder="SCRIVI IL TUO NOME"','placeholder="SCRIVI IL TUO NOME / TYPE YOUR NAME"');
+    html=html.replace('SEGUI LA RICERCA','SEARCH MY TRACES');
+    html=html.replace('Tracce del nome','PUBLIC TRACES');
+    html=html.replace('Tracce ad alta pertinenza.','What the network can connect to this name.');
+    html=html.replace('AGGIUNGI UNA TRACCIA VISIVA','CONTINUA / ADD A VISUAL TRACE');
+    html=html.replace('Inquadra il volto.','LOOK AT THE CAMERA.');
+    html=html.replace('PORTA IL VOLTO DENTRO LA SAGOMA','POSITION YOUR FACE IN THE FRAME');
+    html=html.replace('La tua immagine attraversa altre immagini.','Your image crosses public visual traces.');
+    html=html.replace('Resta una traccia.','A TRACE REMAINS.');
+    html=html.replace('Le tracce si spostano.','CURRENT POSITION');
+    html=html.replace('Incompleta per scelta.','A REPRESENTATION BUILT FROM TRACES.');
+
+    const theme=`
+<style id="v11-theme">
+:root{--bg:#020303!important;--line:#1a2d31!important;--cyan:#67eded!important;--fg:#eef4f4!important;--muted:#76878a!important;--soft:#aab7b8!important}
+html,body{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;background:#020303!important}
+#app{background:linear-gradient(rgba(103,237,237,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(103,237,237,.012) 1px,transparent 1px),radial-gradient(circle at 72% 34%,rgba(103,237,237,.045),transparent 26%),#020303!important;background-size:44px 44px,44px 44px,auto,auto!important}
+#app:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 0 49.8%,rgba(103,237,237,.035) 50%,transparent 50.2%);mix-blend-mode:screen;opacity:.5}
+header{height:58px!important;padding:9px 14px!important;background:rgba(2,3,3,.95)!important;border-bottom:1px solid rgba(103,237,237,.18)!important}.brand{font-size:11px!important;letter-spacing:.24em!important}.engine{font-size:7px!important;letter-spacing:.08em!important}.status{font-size:7px!important;letter-spacing:.11em!important}.progress{height:1px!important}
+.screen{padding:18px 16px 14px!important}.kicker{font-size:8px!important;letter-spacing:.18em!important}h1{font-size:27px!important;letter-spacing:.02em!important;line-height:1.08!important;font-weight:500!important;max-width:16ch!important}h2{font-size:17px!important;font-weight:500!important;letter-spacing:.01em!important}.small{font-size:8px!important}
+.textbox{font:12px/1.3 ui-monospace,monospace!important;letter-spacing:.06em!important;padding:13px 0!important;border-bottom:1px solid rgba(103,237,237,.58)!important}.action,.upload{border-radius:0!important;background:rgba(4,9,10,.72)!important;border-color:rgba(103,237,237,.42)!important;letter-spacing:.12em!important}.action{min-height:43px!important}.action.secondary{border-color:rgba(122,143,146,.28)!important;color:#c9d2d3!important}.upload{border-style:solid!important}
+.sourceField{height:260px!important;border-radius:0!important;border-color:rgba(103,237,237,.20)!important;background:linear-gradient(180deg,rgba(103,237,237,.026),transparent 34%),rgba(1,4,4,.9)!important;padding:10px!important;gap:5px!important}.sourceField:after{height:1px!important;box-shadow:0 0 12px #67eded,0 0 28px rgba(103,237,237,.22)!important}.sourceCard{border-radius:0!important;min-height:42px!important;padding:8px 9px!important;display:grid!important;grid-template-columns:1fr auto!important;grid-template-rows:auto auto!important;background:rgba(3,7,8,.94)!important;border-color:rgba(103,237,237,.14)!important}.sourceCard b{font-size:10px!important;font-weight:500!important;color:#eef4f4!important;grid-column:1/3!important}.sourceCard .src{font-size:7px!important;color:#67eded!important;margin-top:4px!important}.sourceCard:after{content:"TRACE";grid-column:2;grid-row:2;font:7px ui-monospace,monospace;color:#63777a;letter-spacing:.12em;margin-top:4px}.signalStrip{min-height:44px!important}.signal,.chip{border-radius:0!important;font-size:7px!important;padding:4px 5px!important;background:rgba(2,5,6,.82)!important}.liveLog{height:180px!important;font-size:8px!important;line-height:1.55!important;background:linear-gradient(90deg,rgba(103,237,237,.025),transparent 28%)!important}.logRow{grid-template-columns:50px 1fr!important}.logRow .t{color:#4e6265!important}.logRow .m{color:#a8b6b8!important}
+.traceList{gap:5px!important}.traceItem{border-radius:0!important;background:rgba(3,7,8,.84)!important;border-color:rgba(103,237,237,.13)!important;padding:10px!important}.traceItem b{font-size:9px!important;font-weight:500!important}.traceItem p{font-size:9px!important;color:#aebbbc!important}
+.cameraBox,.photoPreview,.visualField,.selfPhoto,.portrait,.revealCard{border-radius:0!important}.cameraStage{background:#020303!important}.cameraStage video,.portrait img,.selfPhoto img,.photoPreview img,.revealCard img{filter:grayscale(1) contrast(1.12) brightness(.88)!important}.tag,.detectBadge{border-radius:0!important;letter-spacing:.09em!important}.visualField{background:linear-gradient(rgba(103,237,237,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(103,237,237,.02) 1px,transparent 1px),#020505!important;background-size:32px 32px!important}.stackImg{border-radius:0!important;border-color:rgba(103,237,237,.22)!important;box-shadow:0 18px 50px rgba(0,0,0,.74)!important}
+.review .portrait:first-child{height:105px!important}.review .portrait:last-child{height:350px!important}.candidateMeta{left:0!important;right:0!important;bottom:0!important;border-top:1px solid rgba(103,237,237,.17)!important;background:rgba(1,3,3,.88)!important;font-size:8px!important}.compareQ{font:11px ui-monospace,monospace!important;letter-spacing:.14em!important;text-transform:uppercase!important}
+.mapScreen{padding-left:10px!important;padding-right:10px!important}.mapScreen h2{margin-left:6px!important}.mapBox{height:clamp(380px,55vh,470px)!important;border:0!important;border-radius:0!important;background:radial-gradient(circle at 50% 47%,rgba(103,237,237,.045),transparent 30%),transparent!important;overflow:visible!important}.nodeInfo{margin:4px 6px 0!important;border-radius:0!important;background:rgba(2,4,4,.82)!important;border-color:rgba(103,237,237,.14)!important;min-height:42px!important}.mapScreen .action{margin-left:6px!important;width:calc(100% - 12px)!important}.summary{border-top-color:rgba(103,237,237,.15)!important}.stat{font-size:8px!important;letter-spacing:.07em!important}.final .big{font-size:21px!important;font-weight:500!important;letter-spacing:.20em!important}.final .line{font-size:12px!important}footer{background:#020303!important;border-top-color:rgba(103,237,237,.14)!important}
+@media(max-height:720px){.sourceField{height:218px!important}.liveLog{height:142px!important}.mapBox{height:345px!important}.review .portrait:last-child{height:285px!important}}
+</style>`;
+    html=html.replace('</style>',`</style>${theme}`);
+
+    const webFn=`
+async function webGeneralSearch(q,log){
+  logTo(log,'query esatta sul web pubblico','WEB GENERALE');
+  try{
+    const r=await fetch('/api/search?q='+encodeURIComponent(q));
+    if(!r.ok)throw new Error('provider');
+    const d=await r.json(),rows=(d.results||[]).filter(x=>relevant(q,x.title||'',x.snippet||'',x.displayed_link||'')).slice(0,8);
+    logTo(log,rows.length+' risultati pertinenti','WEB');
+    for(const x of rows){
+      let host='WEB';try{host=new URL(x.link).hostname.replace(/^www\\./,'')}catch(e){}
+      const words=(x.snippet||'').split(/[^A-Za-zÀ-ÿ0-9]+/).filter(w=>w.length>5).slice(0,4).map(w=>w.toUpperCase());
+      addTrace({title:x.title||host,excerpt:(x.snippet||'').slice(0,220),source:host,tags:['WEB',...words],relations:[host]});
+      logTo(log,(x.title||host).slice(0,38),'TRACCIA');
+      await wait(180);
+    }
+  }catch(e){logTo(log,'provider web non configurato · continuo con fonti aperte','WEB')}
+}
+`;
+    html=html.replace('async function wikiSearch(q,log){',webFn+'async function wikiSearch(q,log){');
+    html=html.replace('meter(8);await wikiSearch(q,log);meter(42);','meter(8);await webGeneralSearch(q,log);meter(30);await wait(420);await wikiSearch(q,log);meter(48);');
+    html=html.replace('meter(58);await wait(430);await githubSearch(q,log);meter(72);','meter(60);await wait(430);await githubSearch(q,log);meter(74);');
+    html=html.replace('meter(86);await wait(430);await musicBrainzSearch(q,log);meter(96);','meter(88);await wait(430);await musicBrainzSearch(q,log);meter(97);');
+
+    html=html.replace('bg=Array.from({length:12}', 'bg=Array.from({length:26}');
+    html=html.replace("bg.forEach(a=>{const p=.55+.45*Math.sin(t*.0014+a.p);actx.fillStyle=`rgba(80,238,238,${.035+.055*p})`;actx.beginPath();actx.arc(a.x,a.y,.8+p*.25,0,Math.PI*2);actx.fill()});requestAnimationFrame(drawAmbient)","for(let i=0;i<bg.length;i++){for(let j=i+1;j<bg.length;j++){const a=bg[i],b=bg[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<115){actx.strokeStyle=`rgba(103,237,237,${.038*(1-d/115)})`;actx.lineWidth=.45;actx.beginPath();actx.moveTo(a.x,a.y);actx.lineTo(b.x,b.y);actx.stroke()}}}bg.forEach(a=>{const p=.55+.45*Math.sin(t*.0014+a.p);actx.fillStyle=`rgba(220,248,248,${.05+.07*p})`;actx.beginPath();actx.arc(a.x,a.y,.7+p*.34,0,Math.PI*2);actx.fill()});requestAnimationFrame(drawAmbient)");
+
+    html=html.replace("rad=162-Math.min(34,(n.count-1)*11)","rad=126+(hash(n.label)%55)-Math.min(28,(n.count-1)*9)");
+    html=html.replace("rad=184}else if(n.type==='NOME'||n.type==='FOTO')","rad=150+(hash(n.label)%44)}else if(n.type==='NOME'||n.type==='FOTO')");
+    html=html.replace("rad=142}else if(n.type==='ASSENZA')","rad=118+(hash(n.label)%30)}else if(n.type==='ASSENZA')");
+    html=html.replace("rad=190}else{a=.32+i*.46;rad=194}","rad=174+(hash(n.label)%22)}else{a=.32+i*.46;rad=158+(hash(n.label)%48)}");
+    html=html.replace("drawIMPortrait(ctx,r,photo,.17);drawIMOutline(ctx,r,.19);const revealed=nodes.filter(n=>elapsed>=n.revealAt);","drawIMPortrait(ctx,r,photo,.15);drawIMOutline(ctx,r,.10);const revealed=nodes.filter(n=>elapsed>=n.revealAt);for(let i=0;i<revealed.length;i++){for(let j=i+1;j<revealed.length;j++){const a=revealed[i],b=revealed[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<92){ctx.strokeStyle=`rgba(215,242,242,${.055*(1-d/92)})`;ctx.lineWidth=.45;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}}}");
+    html=html.replace("ctx.shadowBlur=0});\nrevealed.forEach(n=>{const pulse", "ctx.shadowBlur=0;if((n.count>1||n.type==='FONTE')&&Math.sin(n.p)>-.25){ctx.font='6px ui-monospace,monospace';ctx.fillStyle='rgba(190,211,212,.56)';ctx.fillText(n.label.slice(0,16),n.x+8,n.y-7)}});\nrevealed.forEach(n=>{const pulse");
+
+    frame.srcdoc=html;
+    frame.addEventListener('load',()=>{boot.style.display='none'},{once:true});
+  }catch(e){boot.textContent='ENGINE LOAD ERROR';console.error(e)}
+})();
+</script>
+</body>
+</html>

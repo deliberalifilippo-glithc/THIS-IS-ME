@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020303">
+<title>THIS IS ME? — v11.2</title>
+<style>html,body{margin:0;width:100%;height:100%;background:#020303;overflow:hidden}#boot{position:fixed;inset:0;display:grid;place-items:center;color:#b7c5c7;font:11px ui-monospace,monospace;letter-spacing:.16em}</style>
+</head>
+<body>
+<div id="boot">RESTORING PUBLIC IMAGE TRACES</div>
+<script>
+(async()=>{
+  try{
+    let src=await fetch('/v11.html?rev=11.2',{cache:'no-store'}).then(r=>r.text());
+    const patch=`<script>
+(()=>{
+  const hostFrame=document.getElementById('frame');
+  if(!hostFrame)return;
+  const install=()=>{
+    const d=hostFrame.contentDocument,w=hostFrame.contentWindow;
+    if(!d||!d.querySelector||!w)return;
+    const screen=d.querySelector('[data-screen="2"]'),btn=d.getElementById('toPhoto');
+    if(!screen||!btn||d.getElementById('publicImageTraces'))return;
+
+    const style=d.createElement('style');
+    style.textContent=\`
+      #publicImageTraces{position:relative;margin-top:14px;border-top:1px solid rgba(103,237,237,.18);padding-top:10px;overflow:hidden}
+      #publicImageTraces:after{content:"";position:absolute;left:-8%;right:-8%;top:36px;height:1px;background:linear-gradient(90deg,transparent,#67eded,#fff,#67eded,transparent);box-shadow:0 0 12px #67eded;animation:pvScan 2.1s linear infinite;pointer-events:none;opacity:.72}
+      #publicImageTraces .pvHead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:7px;font:7px ui-monospace,monospace;letter-spacing:.14em;color:#67eded;text-transform:uppercase}
+      #publicImageTraces .pvStatus{color:#8da0a2;letter-spacing:.06em;white-space:nowrap}
+      #publicImageLog{height:54px;overflow:hidden;border-top:1px solid rgba(103,237,237,.08);border-bottom:1px solid rgba(103,237,237,.08);padding:4px 0;margin-bottom:7px;font:7px/1.45 ui-monospace,monospace;color:#879a9c}
+      .pvLogRow{display:grid;grid-template-columns:54px 1fr;gap:7px}.pvLogRow b{color:#67eded;font-weight:500}.pvLogRow span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      #publicImageGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+      .pvItem{position:relative;aspect-ratio:1/1.08;overflow:hidden;border:1px solid rgba(103,237,237,.17);background:#050707;opacity:0;transform:translateY(5px);animation:pvIn .32s forwards;cursor:pointer}
+      .pvItem img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1) contrast(1.12) brightness(.84)}
+      .pvItem .pvMeta{position:absolute;left:0;right:0;bottom:0;padding:12px 6px 5px;background:linear-gradient(transparent,rgba(0,0,0,.94));font:6px/1.25 ui-monospace,monospace;color:#c3cecf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .pvItem .pvSource{display:block;color:#67eded;margin-top:2px;text-transform:uppercase}
+      .pvEmpty{grid-column:1/-1;border:1px solid rgba(103,237,237,.12);padding:11px;font:8px/1.45 ui-monospace,monospace;color:#8ca0a2}
+      #inlineSelfie{margin-top:15px;border-top:1px solid rgba(103,237,237,.18);padding-top:11px}
+      #inlineSelfie .inlineTitle{display:flex;justify-content:space-between;margin-bottom:7px;font:7px ui-monospace,monospace;color:#67eded;letter-spacing:.14em;text-transform:uppercase}
+      #pvOverlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.965);display:none;align-items:center;justify-content:center;padding:18px}
+      #pvOverlay.open{display:flex}
+      #pvOverlay .pvPreviewBox{width:min(92vw,410px);max-height:88vh;border:1px solid rgba(103,237,237,.28);background:#030505;display:flex;flex-direction:column}
+      #pvOverlay img{width:100%;max-height:72vh;object-fit:contain;background:#000;filter:grayscale(1) contrast(1.08)}
+      #pvOverlay .pvPreviewMeta{padding:9px;font:8px/1.4 ui-monospace,monospace;color:#c8d1d2;border-top:1px solid rgba(103,237,237,.14)}
+      #pvOverlay .pvPreviewMeta b{display:block;color:#67eded;font-weight:500;margin-bottom:3px}
+      #pvOverlay button{border:0;border-top:1px solid rgba(103,237,237,.18);background:#030505;color:#67eded;padding:10px;font:8px ui-monospace,monospace;letter-spacing:.12em}
+      @keyframes pvIn{to{opacity:1;transform:none}}@keyframes pvScan{from{transform:translateY(0)}to{transform:translateY(430px)}}
+    \`;
+    d.head.appendChild(style);
+
+    const box=d.createElement('div');
+    box.id='publicImageTraces';
+    box.innerHTML='<div class="pvHead"><span>RICERCA IMMAGINI PUBBLICHE</span><span class="pvStatus" id="pvStatus">IN ATTESA</span></div><div id="publicImageLog"></div><div id="publicImageGrid"></div>';
+    screen.insertBefore(box,btn);
+    btn.style.display='none';
+
+    const selfie=d.createElement('div');selfie.id='inlineSelfie';selfie.innerHTML='<div class="inlineTitle"><span>TRACCIA LOCALE / SELFIE</span><span>OPZIONALE</span></div>';
+    box.insertAdjacentElement('afterend',selfie);
+    const screen3=d.querySelector('[data-screen="3"]');
+    ['.photoChoices','#cameraBox','#photoPreview','#photoNext','#cameraStatus'].forEach(sel=>{const el=screen3&&screen3.querySelector(sel);if(el)selfie.appendChild(el)});
+    const next=d.getElementById('photoNext');if(next)next.textContent='CONTINUA / CONFRONTA LE TRACCE';
+
+    const overlay=d.createElement('div');overlay.id='pvOverlay';overlay.innerHTML='<div class="pvPreviewBox"><img id="pvPreviewImg" alt=""><div class="pvPreviewMeta" id="pvPreviewMeta"></div><button id="pvClose">CHIUDI ANTEPRIMA</button></div>';d.body.appendChild(overlay);
+    d.getElementById('pvClose').onclick=()=>overlay.classList.remove('open');
+    overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
+
+    const prox=u=>u?'/api/image-proxy?url='+encodeURIComponent(u):'';
+    const addLog=(label,msg)=>{const log=d.getElementById('publicImageLog');if(!log)return;const row=d.createElement('div');row.className='pvLogRow';row.innerHTML='<b>'+label+'</b><span>'+String(msg||'').replace(/[<>]/g,'')+'</span>';log.appendChild(row);while(log.children.length>4)log.firstElementChild.remove()};
+    const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+    const openPreview=row=>{const raw=row.image||row.thumbnail||'';d.getElementById('pvPreviewImg').src=prox(raw)||raw;d.getElementById('pvPreviewImg').onerror=function(){if(this.src!==raw)this.src=raw};d.getElementById('pvPreviewMeta').innerHTML='<b>'+String(row.title||'TRACCIA VISIVA').replace(/[<>]/g,'')+'</b>'+String(row.source||'WEB').replace(/[<>]/g,'');overlay.classList.add('open')};
+
+    let last='';
+    const load=async()=>{
+      const name=(d.getElementById('nameInput')?.value||'').trim();
+      if(!name||name===last)return;
+      last=name;
+      const grid=d.getElementById('publicImageGrid'),status=d.getElementById('pvStatus'),log=d.getElementById('publicImageLog');
+      if(!grid||!status||!log)return;
+      grid.innerHTML='';log.innerHTML='';status.textContent='RICERCA LIVE';addLog('QUERY','“'+name+'”');
+      try{
+        const r=await fetch('/api/images?q='+encodeURIComponent(name),{cache:'no-store'});if(!r.ok)throw new Error('provider');
+        const data=await r.json(),rows=(data.results||[]).slice(0,10);w.__publicImageRows=rows;w.__publicImageProvider=data.provider||'web';
+        addLog('FONTE',String(data.provider||'web').toUpperCase());
+        if(!rows.length){status.textContent='00 TROVATE';grid.innerHTML='<div class="pvEmpty">Nessuna immagine pubblica pertinente trovata per questo nome.</div>';addLog('ESITO','nessuna traccia visiva');return;}
+        for(let i=0;i<rows.length;i++){
+          const x=rows[i],raw=x.thumbnail||x.image||'';status.textContent=String(i+1).padStart(2,'0')+'/'+String(rows.length).padStart(2,'0');addLog('FOUND',x.title||x.source||'immagine pubblica');
+          const item=d.createElement('div');item.className='pvItem';
+          const img=d.createElement('img');img.loading='eager';img.referrerPolicy='no-referrer';img.alt='';img.src=prox(raw)||raw;img.onerror=function(){if(this.dataset.fallback!=='1'&&raw){this.dataset.fallback='1';this.src=raw}};
+          const meta=d.createElement('div');meta.className='pvMeta';meta.textContent=(x.title||'TRACCIA VISIVA').slice(0,46);const s=d.createElement('span');s.className='pvSource';s.textContent=(x.source||data.provider||'WEB').slice(0,34);meta.appendChild(s);item.appendChild(img);item.appendChild(meta);item.onclick=()=>openPreview(x);grid.appendChild(item);await sleep(110);
+        }
+        status.textContent=String(rows.length).padStart(2,'0')+' TROVATE';addLog('READY','tocca una foto per aprire anteprima');
+      }catch(e){status.textContent='NON DISPONIBILE';grid.innerHTML='<div class="pvEmpty">Ricerca immagini temporaneamente non disponibile.</div>';addLog('ERROR','provider immagini non disponibile')}
+    };
+
+    const inner=d.createElement('script');
+    inner.textContent=\`
+      (()=>{
+        const proxyUrl=u=>u?'/api/image-proxy?url='+encodeURIComponent(u):'';
+        startVisualSearch=async function(){
+          visualCandidates=[];$('#visualLog').innerHTML='';$$('#visualField .stackImg').forEach(x=>x.remove());$('#visualCount').textContent='00 CANDIDATE';show(4);const log=$('#visualLog');
+          logTo(log,'query immagini pubbliche per “'+personName+'”','WEB IMAGE');await wait(260);
+          try{
+            let rows=(window.__publicImageRows||[]).slice(0,10),provider=window.__publicImageProvider||'cache';
+            if(!rows.length){logTo(log,'connessione al motore immagini','SEARCH');const r=await fetch('/api/images?q='+encodeURIComponent(personName),{cache:'no-store'});if(!r.ok)throw new Error();const data=await r.json();rows=(data.results||[]).slice(0,10);provider=data.provider||'web';window.__publicImageRows=rows;window.__publicImageProvider=provider;}
+            logTo(log,String(provider).toUpperCase(),'PROVIDER');logTo(log,rows.length+' risultati ricevuti','RISULTATI');
+            for(let i=0;i<rows.length;i++){
+              const x=rows[i],raw=x.image||x.thumbnail||'',item={title:x.title||('TRACCIA '+(i+1)),display:proxyUrl(raw)||raw,source:x.source||provider,page:x.page||''};
+              visualCandidates.push(item);addVisualImage(item);updateTraceCount();logTo(log,'['+String(i+1).padStart(2,'0')+'] '+item.title.slice(0,34),'PREVIEW');await wait(180);
+              let cont=null;try{cont=await detectContour(item.display)}catch(e){}item.score=faceContour&&cont?contourScore(faceContour,cont):null;
+            }
+            visualCandidates.sort((a,b)=>(b.score??-1)-(a.score??-1));logTo(log,'ordinamento delle tracce visive','RANK');await wait(520);logTo(log,'confronto pronto','PRONTO');await wait(420);
+            if(visualCandidates.length){resultIndex=0;renderCandidate();show(5)}else{logTo(log,'nessuna immagine pubblica disponibile','NESSUN RISULTATO');await wait(700);show(6)}
+          }catch(e){logTo(log,'ricerca immagini non disponibile','ERRORE');await wait(700);show(6)}
+        };
+        const p=$('#photoNext');if(p)p.onclick=()=>startVisualSearch();
+      })();
+    \`;
+    d.body.appendChild(inner);
+
+    const mo=new MutationObserver(()=>{if(screen.classList.contains('active'))load()});mo.observe(screen,{attributes:true,attributeFilter:['class']});if(screen.classList.contains('active'))load();
+  };
+  hostFrame.addEventListener('load',()=>setTimeout(install,100));setTimeout(install,850);
+})();
+<\/script>`;
+    src=src.replace('</body>',patch+'</body>');
+    document.open();document.write(src);document.close();
+  }catch(e){document.getElementById('boot').textContent='ENGINE LOAD ERROR'}
+})();
+</script>
+</body>
+</html>
